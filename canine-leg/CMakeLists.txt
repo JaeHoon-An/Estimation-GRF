@@ -32,10 +32,18 @@ include_directories(
         ${canine-leg-left_simulation_SOURCE_DIR}/include
 )
 
-add_executable(camel-canine-leg-left-simul canine-leg-left_demo/CanineLegLeftSimul.cpp)
-target_link_libraries(camel-canine-leg-left-simul
+add_executable(canine-leg-left-simul canine-leg-left_demo/CanineLegLeftSimul.cpp)
+target_link_libraries(canine-leg-left-simul
         PUBLIC
         Qt5::Widgets
         PRIVATE
         canine-leg-left_simulation
 )
+
+add_executable(canine-leg-left-data canine-leg-left_demo/CanineLegLeftDataCollect.cpp)
+target_link_libraries(canine-leg-left-data
+        PUBLIC
+        raisim::raisim
+        pthread
+        camel-tools-trajectory
+        )
