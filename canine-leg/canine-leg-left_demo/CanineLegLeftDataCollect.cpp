@@ -4,7 +4,10 @@
 
 #include <iostream>
 #include "raisim/RaisimServer.hpp"
-#include <camel-tools/trajectory.hpp>
+#include <canine-leg-left_util/CosTrajectoryGenerator.hpp>
+
+pUI_COMMAND sharedCommand;
+pSHM sharedMemory;
 
 std::string urdfPath = std::string(URDF_RSC_DIR) + "/canine_leg_left/canine_leg_left.urdf";
 std::string name = "canine-leg";
@@ -14,7 +17,7 @@ auto ground = world.addGround(0, "gnd");
 auto robot = world.addArticulatedSystem(urdfPath);
 raisim::RaisimServer server(&world);
 
-CubicTrajectoryGenerator mTrajectoryGenerator;
+CosTrajectoryGenerator mTrajectoryGenerator;
 
 raisim::VecDyn mPosition = raisim::VecDyn(3);
 raisim::VecDyn mVelocity = raisim::VecDyn(3);
@@ -32,6 +35,10 @@ double mLocalTime = 0;
 double dT = 0.001;
 double Kp = 100.0;
 double Kd = 5.0;
+double mTorqueLimit = 13.0;
+double mSpeedLimit = 12.77;
+
+bool isFirstGenTraj = true;
 
 void resetJointState()
 {
@@ -40,8 +47,6 @@ void resetJointState()
     mInitialJointPosition<<0.23, 1.04719755, -2.0943951;
     robot->setGeneralizedCoordinate(mInitialJointPosition);
     robot->setGeneralizedVelocity(mInitialJointVelocity);
-
-
 }
 
 void reset()
@@ -65,11 +70,18 @@ void setTrajectory()
     mDesiredPosition[1] = acos(mDesiredPosition[0] / 0.46);
     mDesiredPosition[2] = -2.0 * mDesiredPosition[1];
 
+    if(isFirstGenTraj)
+    {
+        mPastDesiredPosition[0] = mDesiredPosition[0];
+        mPastDesiredPosition[1] = mDesiredPosition[1];
+        mPastDesiredPosition[2] = mDesiredPosition[2];
+        isFirstGenTraj = false;
+    }
+
 
     mDesiredVelocity[0] = mTrajectoryGenerator.getVelocityTrajectory(mLocalTime);
-    mDesiredVelocity[1] = mDesiredPosition[1] - mPastDesiredPosition[1];
-    mDesiredVelocity[2] = mDesiredPosition[2] - mPastDesiredPosition[2];
-    mDesiredVelocity.operator/=(dT);
+    mDesiredVelocity[1] = (mDesiredPosition[1] - mPastDesiredPosition[1]) / dT;
+    mDesiredVelocity[2] = (mDesiredPosition[2] - mPastDesiredPosition[2]) / dT;
 }
 
 void pdControl()
@@ -88,28 +100,39 @@ void doControl()
     updateState();
     setTrajectory();
     pdControl();
+    for(int i = 0 ; i < 3 ; i++)
+    {
+        if(mTorque[i] > mTorqueLimit)
+        {
+            mTorque[i] = mTorqueLimit;
+        }
+        else if(mTorque[i] < -mTorqueLimit)
+        {
+            mTorque[i] = -mTorqueLimit;
+        }
+    }
     robot->setGeneralizedForce(mTorque);
 }
 
 int main()
 {
+    sharedCommand = (pUI_COMMAND)malloc(sizeof(UI_COMMAND));
+    sharedMemory = (pSHM)malloc(sizeof(SHM));
     world.setTimeStep(dT);
     reset();
     server.launchServer();
     server.focusOn(robot);
     sleep(2);
 
-    mTrajectoryGenerator.updateTrajectory(mPosition[0], 0.4,0,4);
+    mTrajectoryGenerator.updateTrajectory(mPosition[0], mLocalTime,0.05,1);
 
     int iteration = 0;
     while(true)
     {
         iteration++;
-        mLocalTime = iteration * world.getTimeStep();
-
         doControl();
-
         world.integrate();
+        mLocalTime = iteration * world.getTimeStep();
         usleep(1000);
     }
 

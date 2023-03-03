@@ -11,6 +11,7 @@ include_directories(
 add_library(canine-leg-left_util
         SHARED
         src/Command.cpp
+        src/CosTrajectoryGenerator.cpp
         )
 target_link_libraries(canine-leg-left_util
         PUBLIC

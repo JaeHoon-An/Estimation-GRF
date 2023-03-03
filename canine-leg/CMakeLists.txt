@@ -46,4 +46,5 @@ target_link_libraries(canine-leg-left-data
         raisim::raisim
         pthread
         camel-tools-trajectory
+        canine-leg-left_util
         )
