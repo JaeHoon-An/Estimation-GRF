@@ -4,10 +4,7 @@
 
 #include <iostream>
 #include "raisim/RaisimServer.hpp"
-#include <canine-leg-left_util/CosTrajectoryGenerator.hpp>
-
-pUI_COMMAND sharedCommand;
-pSHM sharedMemory;
+#include <canine-leg_util/CosTrajectoryGenerator.hpp>
 
 std::string urdfPath = std::string(URDF_RSC_DIR) + "/canine_leg_left/canine_leg_left.urdf";
 std::string name = "canine-leg";
@@ -116,8 +113,6 @@ void doControl()
 
 int main()
 {
-    sharedCommand = (pUI_COMMAND)malloc(sizeof(UI_COMMAND));
-    sharedMemory = (pSHM)malloc(sizeof(SHM));
     world.setTimeStep(dT);
     reset();
     server.launchServer();

@@ -5,8 +5,8 @@
 #ifndef RAISIM_COSTRAJECTORYGENERATOR_HPP
 #define RAISIM_COSTRAJECTORYGENERATOR_HPP
 
-#include "SharedMemory.hpp"
-#include "math.h"
+#include <cmath>
+#include "CustomMath.hpp"
 
 class CosTrajectoryGenerator
 {

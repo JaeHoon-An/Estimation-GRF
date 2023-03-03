@@ -2,7 +2,7 @@
 // Created by jaehoon on 23. 3. 3.
 //
 
-#include <canine-leg-left_util/CosTrajectoryGenerator.hpp>
+#include <canine-leg_util/CosTrajectoryGenerator.hpp>
 
 void CosTrajectoryGenerator::updateTrajectory(double currentPosition, double currentTime, double amplitude, double frequency){
     mReferencePose = currentPosition;
