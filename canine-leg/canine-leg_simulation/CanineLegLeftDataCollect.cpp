@@ -28,6 +28,8 @@ Eigen::VectorXd mPastDesiredPosition = Eigen::VectorXd (3);
 Eigen::VectorXd mInitialJointPosition(robot->getGeneralizedCoordinateDim());
 Eigen::VectorXd mInitialJointVelocity(robot->getGeneralizedVelocityDim());
 
+Eigen::VectorXd mGRFtrue = Eigen::VectorXd (3);
+
 double mLocalTime = 0;
 double dT = 0.001;
 double Kp = 100.0;
@@ -92,6 +94,12 @@ void pdControl()
     mTorque[0] = 0;
 }
 
+/**
+ * doControl follows these steps : \n
+ * 1. update states \n
+ * 2. set trajectories \n
+ * 3. compute torques
+ */
 void doControl()
 {
     updateState();
@@ -111,6 +119,19 @@ void doControl()
     robot->setGeneralizedForce(mTorque);
 }
 
+/**
+ * Save GRF in mGRFtrue : [GRFx, GRFy, GRFz]
+ */
+void getGRF()
+{
+    auto contact = robot->getContacts();
+    if (&(contact[0]) != nullptr)
+    {
+        mGRFtrue = contact[0].getImpulse().e();
+        mGRFtrue.operator/=(dT);
+    }
+}
+
 int main()
 {
     world.setTimeStep(dT);
@@ -126,6 +147,7 @@ int main()
     {
         iteration++;
         doControl();
+        getGRF();
         world.integrate();
         mLocalTime = iteration * world.getTimeStep();
         usleep(1000);
