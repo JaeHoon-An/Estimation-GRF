@@ -30,6 +30,9 @@ Eigen::VectorXd mInitialJointVelocity(robot->getGeneralizedVelocityDim());
 
 Eigen::VectorXd mGRFtrue = Eigen::VectorXd (3);
 
+int maxIdx = 1000;
+Eigen::MatrixXd mStates = Eigen::MatrixXd(maxIdx,7);
+
 double mLocalTime = 0;
 double dT = 0.001;
 double Kp = 100.0;
@@ -132,12 +135,42 @@ void getGRF()
     }
 }
 
+void writeToCSVfile()
+{
+    std::string name2 = "GRFTrainingData.csv";
+    std::ofstream file2(name2.c_str());
+    for(int  i = 0; i < mStates.rows(); i++)
+    {
+        for(int j = 0; j < mStates.cols(); j++)
+        {
+            std::string str = std::to_string(mStates(i,j));
+            if(j+1 == mStates.cols()){
+                file2<<str;
+            }else{
+                file2<<str<<',';
+            }
+        }
+        file2<<'\n';
+    }
+    std::cout<<"Data is saved."<<std::endl;
+}
+
+void collectData(int idx)
+{
+    mStates(idx, 0) = mPosition[1];
+    mStates(idx, 1) = mPosition[2];
+    mStates(idx, 2) = mVelocity[1];
+    mStates(idx, 3) = mVelocity[2];
+    mStates(idx, 4) = mTorque[1];
+    mStates(idx, 5) = mTorque[2];
+    mStates(idx, 6) = mGRFtrue[2];
+}
+
 int main()
 {
     world.setTimeStep(dT);
     reset();
     server.launchServer();
-    server.focusOn(robot);
     sleep(2);
 
     mTrajectoryGenerator.updateTrajectory(mPosition[0], mLocalTime,0.05,1);
@@ -145,13 +178,18 @@ int main()
     int iteration = 0;
     while(true)
     {
-        iteration++;
         doControl();
         getGRF();
+        collectData(iteration);
         world.integrate();
-        mLocalTime = iteration * world.getTimeStep();
         usleep(1000);
+        iteration++;
+        mLocalTime = iteration * world.getTimeStep();
+        if(iteration == maxIdx)
+        {
+            break;
+        }
     }
-
+    writeToCSVfile();
     server.killServer();
 }
