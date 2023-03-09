@@ -137,7 +137,7 @@ void getGRF()
 
 void writeToCSVfile()
 {
-    std::string name2 = "GRFTrainingData.csv";
+    std::string name2 = "../../data/GRFTrainingData.csv";
     std::ofstream file2(name2.c_str());
     for(int  i = 0; i < mStates.rows(); i++)
     {
