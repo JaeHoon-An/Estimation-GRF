@@ -37,8 +37,7 @@ double mLocalTime = 0;
 double dT = 0.001;
 double Kp = 100.0;
 double Kd = 5.0;
-double mTorqueLimit = 13.0;
-double mSpeedLimit = 12.77;
+double mTorqueLimit = 20.0;
 
 bool isFirstGenTraj = true;
 
