@@ -3,7 +3,6 @@ project(camel-canine-leg-left LANGUAGES CXX)
 
 find_package(Qt5 CONFIG REQUIRED COMPONENTS Widgets)
 find_package(Eigen3 REQUIRED HINTS ${Eigen3_HINT})
-find_package(raisim CONFIG REQUIRED)
 find_package(camel-tools-thread REQUIRED)
 find_package(camel-tools-sensor REQUIRED)
 
@@ -18,7 +17,7 @@ add_executable(canine-leg-left-data canine-leg_simulation/CanineLegLeftDataColle
 target_link_libraries(canine-leg-left-data
         PUBLIC
         Qt5::Widgets
-        raisim::raisim
+        raisim
         pthread
         PRIVATE
         canine-leg_util
