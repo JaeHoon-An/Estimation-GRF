@@ -24,14 +24,16 @@ raisim::VecDyn mPositionError = raisim::VecDyn(3);
 raisim::VecDyn mVelocityError = raisim::VecDyn(3);
 
 raisim::VecDyn mTorque = raisim::VecDyn(3);
-Eigen::VectorXd mPastDesiredPosition = Eigen::VectorXd (3);
+Eigen::VectorXd mPastDesiredPosition = Eigen::VectorXd(3);
 Eigen::VectorXd mInitialJointPosition(robot->getGeneralizedCoordinateDim());
 Eigen::VectorXd mInitialJointVelocity(robot->getGeneralizedVelocityDim());
 
-Eigen::VectorXd mGRFtrue = Eigen::VectorXd (3);
-
-int maxIdx = 1000;
-Eigen::MatrixXd mStates = Eigen::MatrixXd(maxIdx,7);
+Eigen::VectorXd mGRFtrue = Eigen::VectorXd(3);
+int mDataIdx = 0;
+int maxIdx = 4000000;
+Eigen::MatrixXd mStates = Eigen::MatrixXd(maxIdx, 15); // 3time-series of joint pos & vel  + current torque : 12 + 2 = 14 (input dim.)
+Eigen::MatrixXd mPositionBuffer = Eigen::MatrixXd(41, 2);
+Eigen::MatrixXd mVelocityBuffer = Eigen::MatrixXd(41, 2);
 
 double mLocalTime = 0;
 double dT = 0.001;
@@ -40,19 +42,26 @@ double Kd = 5.0;
 double mTorqueLimit = 20.0;
 
 bool isFirstGenTraj = true;
+bool stopFlag = false;
+bool realTimeVisual = true;
+double mSetPoint = 0.23;
 
-void resetJointState()
+void resetJointState(double initialHeight)
 {
     mInitialJointPosition.setZero();
     mInitialJointVelocity.setZero();
-    mInitialJointPosition<<0.23, 1.04719755, -2.0943951;
+    mInitialJointPosition << initialHeight, acos(initialHeight / 0.46), -2.0 * acos(initialHeight / 0.46);
     robot->setGeneralizedCoordinate(mInitialJointPosition);
     robot->setGeneralizedVelocity(mInitialJointVelocity);
 }
 
-void reset()
+void reset(double initialHeight)
 {
-    resetJointState();
+    isFirstGenTraj = true;
+    stopFlag = false;
+    resetJointState(initialHeight);
+    mPositionBuffer.setZero();
+    mVelocityBuffer.setZero();
     mPosition = robot->getGeneralizedCoordinate();
     mVelocity = robot->getGeneralizedVelocity();
     mDesiredPosition = mPosition;
@@ -64,14 +73,14 @@ void updateState()
     mVelocity = robot->getGeneralizedVelocity();
 }
 
-void setTrajectory()
+void setSineTrajectory()
 {
     mDesiredPosition[0] = mTrajectoryGenerator.getPositionTrajectory(mLocalTime);
     mPastDesiredPosition = mDesiredPosition.e();
     mDesiredPosition[1] = acos(mDesiredPosition[0] / 0.46);
     mDesiredPosition[2] = -2.0 * mDesiredPosition[1];
 
-    if(isFirstGenTraj)
+    if (isFirstGenTraj)
     {
         mPastDesiredPosition[0] = mDesiredPosition[0];
         mPastDesiredPosition[1] = mDesiredPosition[1];
@@ -87,7 +96,7 @@ void setTrajectory()
 
 void pdControl()
 {
-    for(int i = 0 ; i < 3 ; i ++)
+    for (int i = 0; i < 3; i++)
     {
         mPositionError[i] = mDesiredPosition[i] - mPosition[i];
         mVelocityError[i] = mDesiredVelocity[i] - mVelocity[i];
@@ -102,18 +111,45 @@ void pdControl()
  * 2. set trajectories \n
  * 3. compute torques
  */
-void doControl()
+void doSineControl()
 {
     updateState();
-    setTrajectory();
+    setSineTrajectory();
     pdControl();
-    for(int i = 0 ; i < 3 ; i++)
+    for (int i = 0; i < 3; i++)
     {
-        if(mTorque[i] > mTorqueLimit)
+        if (mTorque[i] > mTorqueLimit)
         {
             mTorque[i] = mTorqueLimit;
         }
-        else if(mTorque[i] < -mTorqueLimit)
+        else if (mTorque[i] < -mTorqueLimit)
+        {
+            mTorque[i] = -mTorqueLimit;
+        }
+    }
+    robot->setGeneralizedForce(mTorque);
+}
+
+void setPointTrajectory(double desiredHeight)
+{
+    mDesiredPosition[0] = desiredHeight;
+    mDesiredPosition[1] = acos(mDesiredPosition[0] / 0.46);
+    mDesiredPosition[2] = -2.0 * mDesiredPosition[1];
+    mDesiredVelocity.setZero();
+}
+
+void doSetPointControl()
+{
+    updateState();
+    setPointTrajectory(mSetPoint);
+    pdControl();
+    for (int i = 0; i < 3; i++)
+    {
+        if (mTorque[i] > mTorqueLimit)
+        {
+            mTorque[i] = mTorqueLimit;
+        }
+        else if (mTorque[i] < -mTorqueLimit)
         {
             mTorque[i] = -mTorqueLimit;
         }
@@ -136,57 +172,138 @@ void getGRF()
 
 void writeToCSVfile()
 {
-    std::string name2 = "../../data/GRFTrainingData.csv";
+    std::string name2 = "../../data/GRFDatasets.csv";
     std::ofstream file2(name2.c_str());
-    for(int  i = 0; i < mStates.rows(); i++)
+    for (int i = 0; i < mDataIdx; i++)
     {
-        for(int j = 0; j < mStates.cols(); j++)
+        for (int j = 0; j < mStates.cols(); j++)
         {
-            std::string str = std::to_string(mStates(i,j));
-            if(j+1 == mStates.cols()){
-                file2<<str;
-            }else{
-                file2<<str<<',';
+            std::string str = std::to_string(mStates(i, j));
+            if (j + 1 == mStates.cols())
+            {
+                file2 << str;
+            }
+            else
+            {
+                file2 << str << ',';
             }
         }
-        file2<<'\n';
+        file2 << '\n';
     }
-    std::cout<<"Data is saved."<<std::endl;
+    std::cout << "Data is saved." << std::endl;
 }
 
-void collectData(int idx)
+void updateBuffer()
 {
-    mStates(idx, 0) = mPosition[1];
-    mStates(idx, 1) = mPosition[2];
-    mStates(idx, 2) = mVelocity[1];
-    mStates(idx, 3) = mVelocity[2];
-    mStates(idx, 4) = mTorque[1];
-    mStates(idx, 5) = mTorque[2];
-    mStates(idx, 6) = mGRFtrue[2];
+    for (int i = 40; i > 0; i--)
+    {
+        mPositionBuffer(i, 0) = mPositionBuffer(i - 1, 0);
+        mPositionBuffer(i, 1) = mPositionBuffer(i - 1, 1);
+        mVelocityBuffer(i, 0) = mVelocityBuffer(i - 1, 0);
+        mVelocityBuffer(i, 1) = mVelocityBuffer(i - 1, 1);
+    }
+    mPositionBuffer(0, 0) = mPosition[1];
+    mPositionBuffer(0, 1) = mPosition[2];
+    mVelocityBuffer(0, 0) = mVelocity[1];
+    mVelocityBuffer(0, 1) = mVelocity[2];
+}
+
+void collectData()
+{
+    if (mGRFtrue[2] == 0)
+    {
+
+    }
+    else if (isnan(mPosition[0] + mPosition[1] + mPosition[2] + mVelocity[0] + mVelocity[1] + mVelocity[2] + mGRFtrue[2] + mTorque[1] + mTorque[2]))
+    {
+        std::cout << "[DATA COLLECTOR] nan is occurred." << std::endl;
+        stopFlag = true;
+    }
+    else
+    {
+        mStates(mDataIdx, 0) = mPositionBuffer(0, 0);
+        mStates(mDataIdx, 1) = mPositionBuffer(20, 0);
+        mStates(mDataIdx, 2) = mPositionBuffer(40, 0);
+        mStates(mDataIdx, 3) = mPositionBuffer(0, 1);
+        mStates(mDataIdx, 4) = mPositionBuffer(20, 1);
+        mStates(mDataIdx, 5) = mPositionBuffer(40, 1);
+        mStates(mDataIdx, 6) = mVelocityBuffer(0, 0);
+        mStates(mDataIdx, 7) = mVelocityBuffer(20, 0);
+        mStates(mDataIdx, 8) = mVelocityBuffer(40, 0);
+        mStates(mDataIdx, 9) = mVelocityBuffer(0, 1);
+        mStates(mDataIdx, 10) = mVelocityBuffer(20, 1);
+        mStates(mDataIdx, 11) = mVelocityBuffer(40, 1);
+        mStates(mDataIdx, 12) = mTorque[1];
+        mStates(mDataIdx, 13) = mTorque[2];
+        mStates(mDataIdx, 14) = mGRFtrue[2];
+        mDataIdx++;
+    }
+}
+
+void doTest(double sineOffset, double sineAmplitude, double sineFrequency)
+{
+    std::cout << "[SYSTEM] offset, amplitude, frequency : " << sineOffset << ", " << sineAmplitude << ", " << sineFrequency << std::endl;
+    mSetPoint = sineOffset;
+    reset(mSetPoint);
+    for (int i = 0; i < 2000; i++)
+    {
+        doSetPointControl();
+        updateBuffer();
+        world.integrate();
+        getGRF();
+        if (realTimeVisual)
+        {
+            usleep(1000);
+        }
+    }
+    mTrajectoryGenerator.updateTrajectory(sineOffset, mLocalTime, sineAmplitude, sineFrequency);
+
+    int iteration = 0;
+    int period = int(1 / sineFrequency / dT);
+    while (true)
+    {
+        doSineControl();
+        updateBuffer();
+        world.integrate();
+        getGRF();
+        collectData();
+        iteration++;
+        mLocalTime = iteration * world.getTimeStep();
+        if ((iteration == period) || stopFlag)
+        {
+            std::cout << "[SYSTEM] iteration : " << iteration << std::endl;
+            std::cout << "[SYSTEM] data index : " << mDataIdx << std::endl<< std::endl;
+            break;
+        }
+        if (realTimeVisual)
+        {
+            usleep(1000);
+        }
+    }
 }
 
 int main()
 {
     world.setTimeStep(dT);
-    reset();
+    mStates.setZero();
     server.launchServer();
+    reset(mSetPoint);
     sleep(2);
-
-    mTrajectoryGenerator.updateTrajectory(mPosition[0], mLocalTime,0.05,1);
-
-    int iteration = 0;
-    while(true)
+    realTimeVisual = false;
+    double sineOffset;
+    double sineAmplitude;
+    double sineFrequency;
+    for (int i = 0; i < 10; i++)
     {
-        doControl();
-        getGRF();
-        collectData(iteration);
-        world.integrate();
-        usleep(1000);
-        iteration++;
-        mLocalTime = iteration * world.getTimeStep();
-        if(iteration == maxIdx)
+        for (int j = 0; j < 10; j++)
         {
-            break;
+            for (int k = 0; k < 40; k++)
+            {
+                sineOffset = 0.1 + 0.035 * i;
+                sineAmplitude = 0.05 + 0.04 * j;
+                sineFrequency = 0.1 + 0.05 * k;
+                doTest(sineOffset, sineAmplitude, sineFrequency);
+            }
         }
     }
     writeToCSVfile();
