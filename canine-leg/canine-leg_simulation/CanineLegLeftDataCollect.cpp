@@ -264,9 +264,9 @@ void doTest(double sineOffset, double sineAmplitude, double sineFrequency)
     {
         doSineControl();
         updateBuffer();
-        world.integrate();
         getGRF();
         collectData();
+        world.integrate();
         iteration++;
         mLocalTime = iteration * world.getTimeStep();
         if ((iteration == period) || stopFlag)
