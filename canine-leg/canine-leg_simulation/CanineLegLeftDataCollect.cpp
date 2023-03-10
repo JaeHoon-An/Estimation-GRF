@@ -172,7 +172,7 @@ void getGRF()
 
 void writeToCSVfile()
 {
-    std::string name2 = "../../data/GRFDatasets.csv";
+    std::string name2 = "../../datasets/GRFDatasets.csv";
     std::ofstream file2(name2.c_str());
     for (int i = 0; i < mDataIdx; i++)
     {
