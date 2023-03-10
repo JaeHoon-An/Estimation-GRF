@@ -20,7 +20,7 @@
       <x>10</x>
       <y>-10</y>
       <width>401</width>
-      <height>401</height>
+      <height>530</height>
      </rect>
     </property>
     <property name="title">
@@ -202,7 +202,7 @@
        <x>10</x>
        <y>250</y>
        <width>381</width>
-       <height>141</height>
+       <height>96</height>
       </rect>
      </property>
      <property name="title">
@@ -260,11 +260,50 @@
        <string>SAVE</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="BT_MODEL_ESTIMATE">
+    </widget>
+    <widget class="QGroupBox" name="GB_VALIDATION">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>360</y>
+       <width>381</width>
+       <height>96</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Validation</string>
+     </property>
+     <widget class="QLineEdit" name="LE_VALIDATION_LOAD_PATH">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>260</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="BT_VALIDATION_LOAD">
       <property name="geometry">
        <rect>
         <x>280</x>
-        <y>100</y>
+        <y>30</y>
+        <width>90</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>LOAD</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="BT_VALIDATION_ESTIMATE">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>60</y>
         <width>90</width>
         <height>30</height>
        </rect>
@@ -273,6 +312,84 @@
        <string>ESTIMATE</string>
       </property>
      </widget>
+     <widget class="QLineEdit" name="LE_VALIDATION_START">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>60</y>
+        <width>60</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="LE_VALIDATION_END">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>60</y>
+        <width>60</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="LE_START">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>60</y>
+        <width>60</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Start :</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="LE_END">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>60</y>
+        <width>60</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>End :</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QPushButton" name="BT_RESET_NETWORK">
+     <property name="geometry">
+      <rect>
+       <x>145</x>
+       <y>470</y>
+       <width>110</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>RESET
+NETWORK</string>
+     </property>
     </widget>
    </widget>
    <widget class="QTabWidget" name="tabWidget">

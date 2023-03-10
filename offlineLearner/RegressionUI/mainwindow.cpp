@@ -1,9 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-/*
- * TODO: Implement file select mode when loading datasets.
- * TODO: Implement standard deviation of loss in each epoch.
+/**
+ *
+ * mDatasetColum        : Dataset's dimension. (input dim. + output dim.)
+ * mDatasetRow          : Number of the datasets.
+ * mValidationsetColum  : Validation dataset's dimension. (input dim. + output dim.)
+ * mValidationsetRow    : Number of the validation datasets.
+ * mInputDimension      : Dimension of input of the neural network.
+ * mOutputDimension     : Dimension of output of the neural network.
  */
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -11,6 +16,8 @@ MainWindow::MainWindow(QWidget* parent)
     , mBatchSize(DEFAULT_BATCH_SIZE)
     , mDatasetColum(15)
     , mDatasetRow(13676)
+    , mValidationsetColum(15)
+    , mValidationsetRow(13676)
     , mInputDimension(14)
     , mOutputDimension(1)
     , mEpochs(DEFAULT_EPOCHS)
@@ -31,7 +38,8 @@ MainWindow::MainWindow(QWidget* parent)
     initializeGraph();
 
     net = std::make_shared<Net>(mInputDimension, mOutputDimension);
-    mDataTensors = torch::randn({ mDatasetRow, mDatasetColum });
+    mDataSet = torch::randn({ mDatasetRow, mDatasetColum });
+    mValidationSet = torch::randn({ mValidationsetRow, mValidationsetColum });
 }
 
 MainWindow::~MainWindow()
@@ -102,35 +110,35 @@ void MainWindow::updateDisplay()
     ui->LE_ESTIMATE_MSE->setText(QString().sprintf("%f", mMSE));
 }
 
-void MainWindow::updateGraph()
+void MainWindow::updateLearningGraph()
 {
     ui->QCP_LEARNING->graph(0)->addData(mCurrentEpoch, mMiniBatchLossMax);
     ui->QCP_LEARNING->graph(1)->addData(mCurrentEpoch, mMiniBatchLossMin);
     ui->QCP_LEARNING->graph(2)->addData(mCurrentEpoch, mLossMean);
+    ui->QCP_LEARNING->xAxis->setRange(1, mEpochs);
+    ui->QCP_LEARNING->replot();
+}
 
+void MainWindow::updateValidationGraph(int* range)
+{
     ui->QCP_ESTIMATE->graph(0)->addData(mEstimateIndex, mEstimatedValue);
     ui->QCP_ESTIMATE->graph(1)->addData(mEstimateIndex, mGroundTruthValue);
-
-    ui->QCP_LEARNING->xAxis->setRange(0, mEpochs);
-    ui->QCP_ESTIMATE->xAxis->setRange(0, mDatasetRow);
-
-    ui->QCP_LEARNING->replot();
+    ui->QCP_ESTIMATE->xAxis->setRange(range[0], range[1]);
     ui->QCP_ESTIMATE->replot();
 }
 
 void MainWindow::on_BT_DATASET_LOAD_clicked()
 {
     std::string dataPath;
-    dataPath.append(DATA_DIR);
+    dataPath.append(DATASET_DIR);
     dataPath.append(ui->LE_DATASET_LOAD_PATH->text().toStdString());
-    loadData(dataPath);
+    loadData(mDataSet, dataPath);
 }
 
-void MainWindow::loadData(std::string& dataPath)
+void MainWindow::loadData(torch::Tensor& tensor, std::string& dataPath)
 {
     std::ifstream ifs(dataPath);
     std::vector<float> datasets;
-
     try
     {
         if (!ifs.is_open())
@@ -140,13 +148,13 @@ void MainWindow::loadData(std::string& dataPath)
         float x = 0;
         char dummy;
 
-        for (int i = 0; i < mDatasetRow; ++i)
+        for (int i = 0; i < tensor.size(0); ++i)
         {
-            for (int i = 0; i < mDatasetColum; ++i)
+            for (int i = 0; i < tensor.size(1); ++i)
             {
                 ifs >> x;
                 datasets.push_back(x);
-                if (i < (mDatasetColum - 1))
+                if (i < (tensor.size(1) - 1))
                 {
                     ifs >> dummy;
                 }
@@ -154,7 +162,7 @@ void MainWindow::loadData(std::string& dataPath)
         }
         mVectorDatasets = datasets;
         ifs.close();
-        vec2tensor();
+        vec2tensor(tensor);
         std::cout << "[DATA LOADER] Datasets are loaded." << std::endl << std::endl;;
     }
     catch (std::string path)
@@ -164,17 +172,46 @@ void MainWindow::loadData(std::string& dataPath)
     }
 }
 
-void MainWindow::vec2tensor()
+void MainWindow::vec2tensor(torch::Tensor& tensor)
 {
-    auto tensorAccessor = mDataTensors.accessor<float, 2>();
+    auto tensorAccessor = tensor.accessor<float, 2>();
 
-    for (int i = 0; i < mDatasetRow; i++)
+    for (int i = 0; i < tensor.size(0); i++)
     {
-        for(int j = 0; j < mDatasetColum ; j++)
+        for(int j = 0; j < tensor.size(1) ; j++)
         {
-            tensorAccessor.data()[i * mDatasetColum + j] = mVectorDatasets[i * mDatasetColum + j];
+            tensorAccessor.data()[i * tensor.size(1) + j] = mVectorDatasets[i * tensor.size(1) + j];
         }
     }
+}
+
+void MainWindow::doValidation(int* range)
+{
+    float squaredError = 0;
+    float sumOfSquaredError = 0;
+    auto inputs = torch::randn({ 1, mInputDimension });
+    auto inputTensorAccessor = inputs.accessor<float, 2>();
+
+    ui->QCP_ESTIMATE->graph(0)->data()->clear();
+    ui->QCP_ESTIMATE->graph(1)->data()->clear();
+
+    for(int i = range[0] ; i < range[1]+1 ; i++)
+    {
+        for( int j = 0 ; j < mInputDimension ; j++)
+        {
+            inputTensorAccessor.data()[j] = mValidationSet.data()[i].data()[j].item<float>();
+        }
+        mGroundTruthValue = mValidationSet.data()[i].data()[mInputDimension].item<float>();
+        mEstimateIndex = i;
+        mEstimatedValue = net->forward(inputs).item<float>();
+        squaredError =  pow((mGroundTruthValue - mEstimatedValue), 2.0);
+        sumOfSquaredError += squaredError;
+        mMSE = squaredError / (i + 1 - range[0]);
+        updateDisplay();
+        updateValidationGraph(range);
+        std::cout << "[ESTIMATION] Index : " << mEstimateIndex << "\tSquared Error : " << squaredError << "\tEstimated Value : " << mEstimatedValue << "\tGround-true Value : " << mGroundTruthValue << std::endl;
+    }
+    std::cout << "[ESTIMATION] RMSE : " << pow((sumOfSquaredError / (range[1] - range[0] + 1)) , 0.5) << std::endl << std::endl;
 }
 
 void MainWindow::on_BT_LEARNING_clicked()
@@ -193,7 +230,7 @@ void MainWindow::on_BT_LEARNING_clicked()
     torch::optim::Adam optimizer(net->parameters(), torch::optim::AdamOptions(mLearningRate));
     auto inputs = torch::randn({ mBatchSize, mInputDimension });
     auto target = torch::randn({ mBatchSize, mOutputDimension });
-    auto datasets = torch::data::datasets::TensorDataset(mDataTensors);
+    auto datasets = torch::data::datasets::TensorDataset(mDataSet);
     auto inputTensorAccessor = inputs.accessor<float, 2>();
     auto targetTensorAccessor = target.accessor<float, 2>();
 
@@ -236,7 +273,7 @@ void MainWindow::on_BT_LEARNING_clicked()
         mCurrentEpoch = epoch;
         std::cout << "[LEARNING] Epoch : " << mCurrentEpoch << "\tAverage Loss : " << mLossMean << std::endl;
         updateDisplay();
-        updateGraph();
+        updateLearningGraph();
     }
     std::cout << std::endl;
 }
@@ -274,29 +311,35 @@ void MainWindow::on_BT_MODEL_LOAD_clicked()
     ifs.close();
 }
 
-void MainWindow::on_BT_MODEL_ESTIMATE_clicked()
+void MainWindow::on_BT_VALIDATION_ESTIMATE_clicked()
 {
-    auto inputs = torch::randn({ 1, mInputDimension });
-    auto inputTensorAccessor = inputs.accessor<float, 2>();
-    float squaredError = 0;
-    float sumOfSquaredError = 0;
-    ui->QCP_ESTIMATE->graph(0)->data()->clear();
-    ui->QCP_ESTIMATE->graph(1)->data()->clear();
-    for(int i = 0 ; i < mEstimateRange ; i++)
+    int idx[2];
+    idx[0] = ui->LE_VALIDATION_START->text().toInt();
+    idx[1] = ui->LE_VALIDATION_END->text().toInt();
+    try
     {
-        for( int j = 0 ; j < mInputDimension ; j++)
+        if((idx[0] < 0) || (idx[0] > mValidationsetRow-1) || (idx[0] > idx[1]) || (idx[1] > mValidationsetRow-1))
         {
-            inputTensorAccessor.data()[j] = mDataTensors.data()[i].data()[j].item<float>();
+            throw idx;
         }
-        mGroundTruthValue = mDataTensors.data()[i].data()[mInputDimension].item<float>();
-        mEstimateIndex = i;
-        mEstimatedValue = net->forward(inputs).item<float>();
-        squaredError =  pow((mGroundTruthValue - mEstimatedValue), 2.0);
-        sumOfSquaredError += squaredError;
-        mMSE = squaredError / (i + 1);
-        updateDisplay();
-        updateGraph();
-        std::cout << "[ESTIMATION] Index : " << mEstimateIndex << "\tSquared Error : " << squaredError << "\tEstimated Value : " << mEstimatedValue << "\tGround-true Value : " << mGroundTruthValue << std::endl;
+        doValidation(idx);
     }
-    std::cout << "[ESTIMATION] RMSE : " << pow((sumOfSquaredError / mDatasetRow) , 0.5) << std::endl << std::endl;
+    catch(int* idx)
+    {
+        perror("[MODEL VALIDATION] Validation set's Index numbers are invalid.");
+        std::cout<<"[MODEL VALIDATION] Index numbers should be in 0 ~ "<<mValidationsetRow-1<<"."<<std::endl;
+    }
+}
+
+void MainWindow::on_BT_VALIDATION_LOAD_clicked()
+{
+    std::string dataPath;
+    dataPath.append(VALIDSET_DIR);
+    dataPath.append(ui->LE_VALIDATION_LOAD_PATH->text().toStdString());
+    loadData(mValidationSet, dataPath);
+}
+
+void MainWindow::on_BT_RESET_NETWORK_clicked()
+{
+    net = std::make_shared<Net>(mInputDimension, mOutputDimension);
 }

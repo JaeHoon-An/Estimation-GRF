@@ -6,9 +6,9 @@
 #include <vector>
 #include <iostream>
 
-constexpr int DEFAULT_BATCH_SIZE = 16;
+constexpr int DEFAULT_BATCH_SIZE = 32;
 constexpr int DEFAULT_EPOCHS = 100;
-constexpr float DEFAULT_LEARNING_RATE = 0.0001;
+constexpr float DEFAULT_LEARNING_RATE = 0.001;
 
 
 QT_BEGIN_NAMESPACE
@@ -31,7 +31,9 @@ private slots:
     void on_BT_MODEL_LOAD_clicked();
     void on_BT_DATASET_LOAD_clicked();
     void on_BT_LEARNING_clicked();
-    void on_BT_MODEL_ESTIMATE_clicked();
+    void on_BT_VALIDATION_LOAD_clicked();
+    void on_BT_VALIDATION_ESTIMATE_clicked();
+    void on_BT_RESET_NETWORK_clicked();
 
 private:
     struct swish : torch::nn::Module
@@ -78,16 +80,21 @@ private:
     void initializeDisplay();
     void initializeGraph();
     void updateDisplay();
-    void updateGraph();
-    void loadData(std::string& dataPath);
-    void vec2tensor();
+    void updateLearningGraph();
+    void updateValidationGraph(int* range);
+    void loadData(torch::Tensor& tensor, std::string& dataPath);
+    void vec2tensor(torch::Tensor& tensor);
+    void doValidation(int* range);
 
     Ui::MainWindow* ui;
-    torch::Tensor mDataTensors;
+    torch::Tensor mDataSet;
+    torch::Tensor mValidationSet;
     std::vector<float> mVectorDatasets;
     int mBatchSize;
     int mDatasetColum;
     int mDatasetRow;
+    int mValidationsetColum;
+    int mValidationsetRow;
     int mInputDimension;
     int mOutputDimension;
     int mEpochs;
