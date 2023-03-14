@@ -37,12 +37,13 @@ Eigen::MatrixXd mVelocityBuffer = Eigen::MatrixXd(41, 2);
 
 double mLocalTime = 0;
 double dT = 0.001;
-double Kp = 100.0;
-double Kd = 5.0;
+double Kp = 70.0;
+double Kd = 2.5;
 double mTorqueLimit = 20.0;
 
 bool isFirstGenTraj = true;
 bool stopFlag = false;
+bool collectFlag = false;
 bool realTimeVisual = true;
 double mSetPoint = 0.23;
 
@@ -59,6 +60,7 @@ void reset(double initialHeight)
 {
     isFirstGenTraj = true;
     stopFlag = false;
+    collectFlag = false;
     resetJointState(initialHeight);
     mPositionBuffer.setZero();
     mVelocityBuffer.setZero();
@@ -172,7 +174,7 @@ void getGRF()
 
 void writeToCSVfile()
 {
-    std::string name2 = "../../datasets/training/GRFDatasets.csv";
+    std::string name2 = "../../datasets/training/GRFDatasets_4.csv";
     std::ofstream file2(name2.c_str());
     for (int i = 0; i < mDataIdx; i++)
     {
@@ -215,6 +217,11 @@ void collectData()
         std::cout << "[DATA COLLECTOR] Zero GRF is occurred." << std::endl;
         stopFlag = true;
     }
+    else if (mGRFtrue[2] > 100)
+    {
+        std::cout << "[DATA COLLECTOR] Raisim error is occurred." << std::endl;
+        stopFlag = true;
+    }
     else if(mPosition[0] < 0.03)
     {
         std::cout << "[DATA COLLECTOR] Base contact is occurred." << std::endl;
@@ -225,7 +232,7 @@ void collectData()
         std::cout << "[DATA COLLECTOR] nan is occurred." << std::endl;
         stopFlag = true;
     }
-    else
+    else if(collectFlag == true)
     {
         mStates(mDataIdx, 0) = mPositionBuffer(0, 0);
         mStates(mDataIdx, 1) = mPositionBuffer(20, 0);
@@ -275,7 +282,12 @@ void doTest(double sineOffset, double sineAmplitude, double sineFrequency)
         world.integrate();
         iteration++;
         mLocalTime = iteration * world.getTimeStep();
-        if ((iteration == period) || stopFlag)
+        if(iteration == period)
+        {
+            collectFlag = true;
+        }
+
+        if ((iteration == 2*period) || stopFlag)
         {
             std::cout << "[SYSTEM] iteration : " << iteration << std::endl;
             std::cout << "[SYSTEM] data index : " << mDataIdx << std::endl<< std::endl;
