@@ -15,9 +15,9 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
     , mBatchSize(DEFAULT_BATCH_SIZE)
     , mDatasetColum(15)
-    , mDatasetRow(13676)
+    , mDatasetRow(620354)
     , mValidationsetColum(15)
-    , mValidationsetRow(13676)
+    , mValidationsetRow(10000)
     , mInputDimension(14)
     , mOutputDimension(1)
     , mEpochs(DEFAULT_EPOCHS)
@@ -49,7 +49,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::initializeDisplay()
 {
-    ui->LE_DATASET_LOAD_PATH->setText("Datasets.csv");
+    ui->LE_DATASET_LOAD_PATH->setText("GRFDatasets.csv");
+    ui->LE_VALIDATION_LOAD_PATH->setText("GRFDatasets_valid.csv");
     ui->LE_PARAMS_BATCH_SIZE->setText(QString().sprintf("%d", mBatchSize));
     ui->LE_PARAMS_EPOCHS->setText(QString().sprintf("%d", mEpochs));
     ui->LE_PARAMS_LAERNING_RATE->setText(QString().sprintf("%f", mLearningRate));
