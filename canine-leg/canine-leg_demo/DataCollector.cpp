@@ -172,7 +172,7 @@ void getGRF()
 
 void writeToCSVfile()
 {
-    std::string name2 = "../../datasets/GRFDatasets.csv";
+    std::string name2 = "../../datasets/training/GRFDatasets.csv";
     std::ofstream file2(name2.c_str());
     for (int i = 0; i < mDataIdx; i++)
     {
@@ -212,7 +212,13 @@ void collectData()
 {
     if (mGRFtrue[2] == 0)
     {
-
+        std::cout << "[DATA COLLECTOR] Zero GRF is occurred." << std::endl;
+        stopFlag = true;
+    }
+    else if(mPosition[0] < 0.03)
+    {
+        std::cout << "[DATA COLLECTOR] Base contact is occurred." << std::endl;
+        stopFlag = true;
     }
     else if (isnan(mPosition[0] + mPosition[1] + mPosition[2] + mVelocity[0] + mVelocity[1] + mVelocity[2] + mGRFtrue[2] + mTorque[1] + mTorque[2]))
     {

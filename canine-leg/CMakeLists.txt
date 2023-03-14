@@ -13,7 +13,7 @@ include_directories(
         ${canine-leg_util_SOURCE_DIR}/include
 )
 
-add_executable(canine-leg-left-data canine-leg_simulation/CanineLegLeftDataCollect.cpp)
+add_executable(canine-leg-left-data canine-leg_demo/DataCollector.cpp)
 target_link_libraries(canine-leg-left-data
         PUBLIC
         Qt5::Widgets
