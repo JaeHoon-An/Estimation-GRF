@@ -1,3 +1,4 @@
 # Build and Release Folders
 cmake-build*/*
 .idea/*
+datasets/training/*
