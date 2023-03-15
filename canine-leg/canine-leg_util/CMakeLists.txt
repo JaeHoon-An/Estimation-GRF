@@ -11,4 +11,5 @@ include_directories(
 add_library(canine-leg_util
         SHARED
         src/CosTrajectoryGenerator.cpp
+        src/LoadCell.cpp
         )
