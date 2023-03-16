@@ -27,10 +27,18 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//TODO
 void MainWindow::initLineEdit()
 {
-
+    ui->LE_PARAMETERS_PARAMS_Kp->setText(QString().sprintf("%f", DEFAULT_Kp));
+    ui->LE_PARAMETERS_PARAMS_Kd->setText(QString().sprintf("%f", DEFAULT_Kd));
+    ui->LE_PARAMETERS_PARAMS_LPF_VEL->setText(QString().sprintf("%f", DEFAULT_CUTOFF_FREQ));
+    ui->LE_MODEL_PARAMS_LEARNING_RATE->setText(QString().sprintf("%f", DEFAULT_LEARNING_RATE));
+    ui->LE_CUBIC_PARAMS_GOAL_HEIGHT->setText(QString().sprintf("%f", DEFAULT_CUBIC_HEIGHT));
+    ui->LE_CUBIC_PARAMS_TIME_DURATION->setText(QString().sprintf("%f", DEFAULT_CUBIC_TIME));
+    ui->LE_COS_PARAMS_AMPLITUDE->setText(QString().sprintf("%f", DEFAULT_COS_AMPLITUDE));
+    ui->LE_COS_PARAMS_FREQUENCY->setText(QString().sprintf("%f", DEFAULT_COS_FREQUENCY));
+    ui->LE_EXPERIMENT_DATA_PATH->setText("SIM_result.csv");
+    ui->LE_MODEL_LOAD_PATH->setText("Model.pt");
 }
 
 void MainWindow::graphInitialize()
@@ -40,10 +48,10 @@ void MainWindow::graphInitialize()
     myPen.setColor(Qt::blue);
     dotPen.setStyle(Qt::DotLine);
     dotPen.setWidth(1);
-    dotPen.setColor(QColor(180,180,180));
+    dotPen.setColor(Qt::red);
     dashPen.setStyle(Qt::DashLine);
     dashPen.setWidth(2);
-    dashPen.setColor(Qt::gray);
+    dashPen.setColor(Qt::black);
 
     QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
     timeTicker->setTimeFormat("%m:%s");
@@ -187,7 +195,40 @@ void MainWindow::displayUpdate()
 //TODO
 void MainWindow::graphUpdate()
 {
+    ui->QCP_STATES_POS_HIP->graph(0)->addData(sharedMemory->localTime, sharedMemory->motorDesiredPosition[HIP_IDX]);
+    ui->QCP_STATES_POS_HIP->graph(1)->addData(sharedMemory->localTime, sharedMemory->motorPosition[HIP_IDX]);
+    ui->QCP_STATES_POS_KNEE->graph(0)->addData(sharedMemory->localTime, sharedMemory->motorDesiredPosition[KNEE_IDX]);
+    ui->QCP_STATES_POS_KNEE->graph(1)->addData(sharedMemory->localTime, sharedMemory->motorPosition[KNEE_IDX]);
+    ui->QCP_STATES_VEL_HIP->graph(0)->addData(sharedMemory->localTime, sharedMemory->motorDesiredVelocity[HIP_IDX]);
+    ui->QCP_STATES_VEL_HIP->graph(1)->addData(sharedMemory->localTime, sharedMemory->motorVelocity[HIP_IDX]);
+    ui->QCP_STATES_VEL_KNEE->graph(0)->addData(sharedMemory->localTime, sharedMemory->motorDesiredVelocity[KNEE_IDX]);
+    ui->QCP_STATES_VEL_KNEE->graph(1)->addData(sharedMemory->localTime, sharedMemory->motorVelocity[KNEE_IDX]);
+    ui->QCP_STATES_TAU_HIP->graph(0)->addData(sharedMemory->localTime, sharedMemory->motorDesiredTorque[HIP_IDX]);
+    ui->QCP_STATES_TAU_HIP->graph(1)->addData(sharedMemory->localTime, sharedMemory->motorTorque[HIP_IDX]);
+    ui->QCP_STATES_TAU_KNEE->graph(0)->addData(sharedMemory->localTime, sharedMemory->motorDesiredTorque[KNEE_IDX]);
+    ui->QCP_STATES_TAU_KNEE->graph(1)->addData(sharedMemory->localTime, sharedMemory->motorTorque[KNEE_IDX]);
 
+    ui->QCP_GRF_GRF->graph(0)->addData(sharedMemory->localTime, sharedMemory->measuredGRF);
+    ui->QCP_GRF_GRF->graph(1)->addData(sharedMemory->localTime, sharedMemory->estimatedGRF);
+    ui->QCP_GRF_ERROR->graph(0)->addData(sharedMemory->localTime, abs(sharedMemory->measuredGRF - sharedMemory->estimatedGRF));
+
+    ui->QCP_STATES_POS_HIP->xAxis->setRange(sharedMemory->localTime - graphOffset, sharedMemory->localTime + graphOffset);
+    ui->QCP_STATES_POS_KNEE->xAxis->setRange(sharedMemory->localTime - graphOffset, sharedMemory->localTime + graphOffset);
+    ui->QCP_STATES_VEL_HIP->xAxis->setRange(sharedMemory->localTime - graphOffset, sharedMemory->localTime + graphOffset);
+    ui->QCP_STATES_VEL_KNEE->xAxis->setRange(sharedMemory->localTime - graphOffset, sharedMemory->localTime + graphOffset);
+    ui->QCP_STATES_TAU_HIP->xAxis->setRange(sharedMemory->localTime - graphOffset, sharedMemory->localTime + graphOffset);
+    ui->QCP_STATES_TAU_KNEE->xAxis->setRange(sharedMemory->localTime - graphOffset, sharedMemory->localTime + graphOffset);
+    ui->QCP_GRF_GRF->xAxis->setRange(sharedMemory->localTime - graphOffset, sharedMemory->localTime + graphOffset);
+    ui->QCP_GRF_ERROR->xAxis->setRange(sharedMemory->localTime - graphOffset, sharedMemory->localTime + graphOffset);
+
+    ui->QCP_STATES_POS_HIP->replot();
+    ui->QCP_STATES_POS_KNEE->replot();
+    ui->QCP_STATES_VEL_HIP->replot();
+    ui->QCP_STATES_VEL_KNEE->replot();
+    ui->QCP_STATES_TAU_HIP->replot();
+    ui->QCP_STATES_TAU_KNEE->replot();
+    ui->QCP_GRF_GRF->replot();
+    ui->QCP_GRF_ERROR->replot();
 }
 
 void MainWindow::initTable(QTableWidget* table)
@@ -256,48 +297,72 @@ void MainWindow::initTable(QTableWidget* table)
     table->item(1, 0)->setText(QString().sprintf("0x%x", MOTOR_KNEE_ID));
 }
 
-//TODO:
 void MainWindow::on_BT_MAIN_PANEL_START_SIMULATION_clicked()
 {
-
+    sharedCommand->userCommand = SIM_MOTOR_ON;
+    sharedMemory->newCommand = true;
 }
 
 void MainWindow::on_BT_MAIN_PANEL_RESET_clicked()
 {
-
+    sharedCommand->userCommand = SIM_MOTOR_OFF;
+    sharedMemory->newCommand = true;
 }
 
 void MainWindow::on_BT_MAIN_PANEL_HOME_clicked()
 {
-
+    sharedCommand->userCommand = SIM_HOME;
+    sharedMemory->newCommand = true;
 }
 
 void MainWindow::on_BT_PARAMETERS_SET_PARAMS_clicked()
 {
-
+    sharedMemory->Kp = ui->LE_PARAMETERS_PARAMS_Kp->text().toDouble();
+    sharedMemory->Kd = ui->LE_PARAMETERS_PARAMS_Kd->text().toDouble();
+    sharedMemory->LPFCutoffFrequency = ui->LE_PARAMETERS_PARAMS_LPF_VEL->text().toDouble();
+    sharedCommand->userCommand = SIM_SETPARAMS;
+    sharedMemory->newCommand = true;
 }
 
 void MainWindow::on_BT_CUBIC_CONTROL_clicked()
 {
-
+    sharedMemory->cubicGoalHeight = ui->LE_CUBIC_PARAMS_GOAL_HEIGHT->text().toDouble();
+    sharedMemory->cubicTimeDuration = ui->LE_CUBIC_PARAMS_TIME_DURATION->text().toDouble();
+    sharedCommand->userCommand = SIM_CUBIC_CONTROL;
+    sharedMemory->newCommand = true;
 }
 
 void MainWindow::on_BT_COS_CONTROL_clicked()
 {
-
+    sharedMemory->cosAmplitude = ui->LE_COS_PARAMS_AMPLITUDE->text().toDouble();
+    sharedMemory->cosFrequency = ui->LE_COS_PARAMS_FREQUENCY->text().toDouble();
+    sharedCommand->userCommand = SIM_COS_CONTROL;
+    sharedMemory->newCommand = true;
 }
 
 void MainWindow::on_BT_MODEL_LOAD_clicked()
 {
-
+    std::string modelPath;
+    modelPath.append(MODEL_DIR);
+    modelPath.append(ui->LE_MODEL_LOAD_PATH->text().toStdString());
+    sharedMemory->modelName = modelPath;
+    sharedCommand->userCommand = SIM_LOAD_MODEL;
+    sharedMemory->newCommand = true;
 }
 
 void MainWindow::on_BT_MODEL_ONLINE_LEARNING_clicked()
 {
-
+    sharedMemory->learningRate = ui->LE_MODEL_PARAMS_LEARNING_RATE->text().toDouble();
+    sharedCommand->userCommand = SIM_ONLINE_LEARNING;
+    sharedMemory->newCommand = true;
 }
 
 void MainWindow::on_BT_EXPERIMENT_DATA_SAVE_clicked()
 {
-
+    std::string resultPath;
+    resultPath.append(SIMULRESULT_DIR);
+    resultPath.append(ui->LE_EXPERIMENT_DATA_PATH->text().toStdString());
+    sharedMemory->modelName = resultPath;
+    sharedCommand->userCommand = SIM_SAVE_RESULT;
+    sharedMemory->newCommand = true;
 }

@@ -296,9 +296,9 @@ public:
         LE_PARAMETERS_PARAMS_LPF_VEL->setText(QString());
         LE_PARAMETERS_LPF_VEL->setText(QApplication::translate("MainWindow", "LPF Velocity", nullptr));
         GB_MAIN_PANEL->setTitle(QString());
-        BT_MAIN_PANEL_RESET->setText(QApplication::translate("MainWindow", "RESET", nullptr));
-        BT_MAIN_PANEL_START_SIMULATION->setText(QApplication::translate("MainWindow", "START\n"
-                                                                                      "SIMULATION", nullptr));
+        BT_MAIN_PANEL_RESET->setText(QApplication::translate("MainWindow", "MOTOR\n""OFF", nullptr));
+        BT_MAIN_PANEL_START_SIMULATION->setText(QApplication::translate("MainWindow", "MOTOR\n"
+                                                                                      "ON", nullptr));
         BT_MAIN_PANEL_HOME->setText(QApplication::translate("MainWindow", "HOME", nullptr));
     } // retranslateUi
 
