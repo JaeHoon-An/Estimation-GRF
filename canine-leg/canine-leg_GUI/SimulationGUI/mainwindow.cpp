@@ -344,7 +344,8 @@ void MainWindow::on_BT_MODEL_LOAD_clicked()
     std::string modelPath;
     modelPath.append(MODEL_DIR);
     modelPath.append(ui->LE_MODEL_LOAD_PATH->text().toStdString());
-    sharedMemory->modelName = &modelPath;
+    path = modelPath;
+    sharedMemory->modelName = &path;
     sharedCommand->userCommand = SIM_LOAD_MODEL;
     sharedMemory->newCommand = true;
 }
@@ -356,12 +357,10 @@ void MainWindow::on_BT_MODEL_ONLINE_LEARNING_clicked()
     sharedMemory->newCommand = true;
 }
 
+//TODO : Add write csv data in here
 void MainWindow::on_BT_EXPERIMENT_DATA_SAVE_clicked()
 {
     std::string resultPath;
     resultPath.append(SIMULRESULT_DIR);
     resultPath.append(ui->LE_EXPERIMENT_DATA_PATH->text().toStdString());
-    sharedMemory->modelName = &resultPath;
-    sharedCommand->userCommand = SIM_SAVE_RESULT;
-    sharedMemory->newCommand = true;
 }

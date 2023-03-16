@@ -25,6 +25,7 @@ void torchFunction()
             {
                 torch::Tensor tensor = torch::rand({ 2, 3 });
                 std::cout << tensor << std::endl;
+                std::cout << *(sharedMemory->modelName) << std::endl;
                 sharedMemory->torchState = TORCH_NO_ACT;
                 break;
             }

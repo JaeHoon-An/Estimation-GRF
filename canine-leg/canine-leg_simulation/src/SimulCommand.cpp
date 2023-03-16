@@ -57,18 +57,8 @@ void SimulCommand::commandFunction()
             sharedMemory->torchState = TORCH_ONLINE_LEARNING;
             break;
         }
-        case SIM_SAVE_RESULT:
-        {
-            saveResult();
-            break;
-        }
         default:
             break;
         }
     }
-}
-
-void SimulCommand::saveResult()
-{
-
 }

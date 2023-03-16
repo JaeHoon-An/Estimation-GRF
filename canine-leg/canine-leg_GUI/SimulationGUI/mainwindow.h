@@ -42,6 +42,7 @@ private:
     QTimer      *displayTimer;
     QTimer		*graphTimer;
     Ui::MainWindow *ui;
+    std::string path;
     double graphOffset;
 };
 #endif // MAINWINDOW_H

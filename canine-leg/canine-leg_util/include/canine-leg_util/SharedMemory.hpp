@@ -73,7 +73,6 @@ typedef struct _SHM_
     double cosFrequency;
     double learningRate;
     std::string* modelName;
-    std::string* dataSavePath;
 } SHM, * pSHM;
 
 enum CONTROL_STATE
@@ -98,7 +97,6 @@ enum SIMULATION_COMMAND
     SIM_COS_CONTROL,
     SIM_LOAD_MODEL,
     SIM_ONLINE_LEARNING,
-    SIM_SAVE_RESULT
 };
 
 enum VISUAL_STATE
