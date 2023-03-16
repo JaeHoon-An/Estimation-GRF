@@ -12,10 +12,12 @@ find_package(camel-tools-sensor REQUIRED)
 find_package(camel-tools-filter REQUIRED)
 
 add_subdirectory(canine-leg_util)
+add_subdirectory(canine-leg_simulation)
 
 include_directories(
         ${EIGEN3_INCLUDE_DIRS}
         ${canine-leg_util_SOURCE_DIR}/include
+        ${canine-leg_simulation_SOURCE_DIR}/include
         canine-leg_GUI
 )
 
@@ -41,6 +43,7 @@ target_link_libraries(canine-leg-left-simulation
         pthread
         PRIVATE
         canine-leg_util
+        canine-leg_simulation
         camel-tools-filter
         )
 

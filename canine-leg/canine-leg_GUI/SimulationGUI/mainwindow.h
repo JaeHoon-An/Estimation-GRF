@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QPen>
 #include <canine-leg_util/SharedMemory.hpp>
+#include <canine-leg_util/CustomMath.hpp>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,7 +21,8 @@ public:
     ~MainWindow();
 
 private slots:
-
+    void displayUpdate();
+    void graphUpdate();
     void on_BT_MAIN_PANEL_START_SIMULATION_clicked();
     void on_BT_MAIN_PANEL_RESET_clicked();
     void on_BT_MAIN_PANEL_HOME_clicked();
@@ -32,8 +34,6 @@ private slots:
     void on_BT_EXPERIMENT_DATA_SAVE_clicked();
 
 private:
-    void displayUpdate();
-    void graphUpdate();
     void graphInitialize();
     void initTable(QTableWidget *table);
     void initLineEdit();
