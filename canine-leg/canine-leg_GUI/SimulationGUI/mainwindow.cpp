@@ -192,7 +192,6 @@ void MainWindow::displayUpdate()
     }
 }
 
-//TODO
 void MainWindow::graphUpdate()
 {
     ui->QCP_STATES_POS_HIP->graph(0)->addData(sharedMemory->localTime, sharedMemory->motorDesiredPosition[HIP_IDX]);
@@ -345,7 +344,7 @@ void MainWindow::on_BT_MODEL_LOAD_clicked()
     std::string modelPath;
     modelPath.append(MODEL_DIR);
     modelPath.append(ui->LE_MODEL_LOAD_PATH->text().toStdString());
-    sharedMemory->modelName = modelPath;
+    sharedMemory->modelName = &modelPath;
     sharedCommand->userCommand = SIM_LOAD_MODEL;
     sharedMemory->newCommand = true;
 }
@@ -362,7 +361,7 @@ void MainWindow::on_BT_EXPERIMENT_DATA_SAVE_clicked()
     std::string resultPath;
     resultPath.append(SIMULRESULT_DIR);
     resultPath.append(ui->LE_EXPERIMENT_DATA_PATH->text().toStdString());
-    sharedMemory->modelName = resultPath;
+    sharedMemory->modelName = &resultPath;
     sharedCommand->userCommand = SIM_SAVE_RESULT;
     sharedMemory->newCommand = true;
 }

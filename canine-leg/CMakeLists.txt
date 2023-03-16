@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 project(camel-canine-leg-left LANGUAGES CXX)
 
 find_package(Qt5 CONFIG REQUIRED COMPONENTS Widgets)
+find_package(Torch REQUIRED)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
@@ -38,6 +40,7 @@ add_executable(canine-leg-left-simulation
 
 target_link_libraries(canine-leg-left-simulation
         PUBLIC
+        "${TORCH_LIBRARIES}"
         Qt5::Widgets
         raisim
         pthread
@@ -52,3 +55,5 @@ target_link_libraries(GRFtest
         canine-leg_util
         camel-tools-filter
         )
+
+set_property(TARGET canine-leg-left-simulation PROPERTY CXX_STANDARD 14)

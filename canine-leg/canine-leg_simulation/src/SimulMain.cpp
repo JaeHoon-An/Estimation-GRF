@@ -64,6 +64,7 @@ void clearSharedMemory()
     sharedMemory->controlState = STATE_CONTROL_STOP;
     sharedMemory->visualState = VISUAL_STOP;
     sharedMemory->canState = CAN_NO_ACT;
+    sharedMemory->torchState = TORCH_NO_ACT;
     sharedMemory->localTime = 0;
     sharedMemory->desiredHipVerticalPosition = 0;
     sharedMemory->desiredHipVerticalVelocity = 0;

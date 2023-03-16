@@ -44,6 +44,7 @@ typedef struct _SHM_
     int controlState;
     int visualState;
     int canState;
+    int torchState;
     int motorErrorStatus[MOTOR_NUM];
     int motorTemp[MOTOR_NUM];
 
@@ -71,8 +72,8 @@ typedef struct _SHM_
     double cosAmplitude;
     double cosFrequency;
     double learningRate;
-    std::string modelName;
-    std::string dataSavePath;
+    std::string* modelName;
+    std::string* dataSavePath;
 } SHM, * pSHM;
 
 enum CONTROL_STATE
@@ -122,6 +123,13 @@ enum COMMAND
 enum CAN_STATE
 {
     CAN_NO_ACT
+};
+
+enum TORCH_STATE
+{
+    TORCH_NO_ACT,
+    TORCH_LOAD_MODEL,
+    TORCH_ONLINE_LEARNING
 };
 #endif //ESTIMATION_GRF_SHAREDMEMORY_HPP
 
