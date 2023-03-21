@@ -21,14 +21,17 @@ public:
 private:
     void integrateSimul();
     void updateStates();
+    void clearBuffer();
+    void updateBuffer();
+    void updateNetInputs();
 
 private:
     raisim::World* mWorld;
     raisim::ArticulatedSystem* mRobot;
     JointPDController PDcontrol;
     uint64_t mIteration;
-    uint64_t mRefMPCIteration;
-
+    double mBufferPosition [BUFFER_SIZE][MOTOR_NUM];
+    double mBufferVelocity [BUFFER_SIZE][MOTOR_NUM];
     raisim::VecDyn mTorque = raisim::VecDyn(3);
 };
 

@@ -54,7 +54,8 @@ void SimulCommand::commandFunction()
         }
         case SIM_ONLINE_LEARNING:
         {
-            sharedMemory->torchState = TORCH_ONLINE_LEARNING;
+//            sharedMemory->torchState = TORCH_ONLINE_LEARNING;
+            sharedMemory->torchState = TORCH_ESTIMATION;
             break;
         }
         default:

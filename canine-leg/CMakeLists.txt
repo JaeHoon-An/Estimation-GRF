@@ -35,6 +35,7 @@ target_link_libraries(canine-leg-left-data
 
 add_executable(canine-leg-left-simulation
         canine-leg_demo/Simulation.cpp
+        canine-leg_demo/TorchModelManager.cpp
         canine-leg_GUI/SimulationGUI/mainwindow.cpp
         canine-leg_GUI/util/qcustomplot.cpp)
 

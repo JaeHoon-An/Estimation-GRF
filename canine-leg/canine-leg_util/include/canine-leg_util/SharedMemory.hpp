@@ -10,6 +10,9 @@
 constexpr int MAX_COMMAND_DATA = 10;
 constexpr int MAX_CUSTOM_DATA = 20;
 constexpr int MOTOR_NUM = 2;
+constexpr int BUFFER_SIZE = 41;
+constexpr int NET_INPUT_SIZE = 14;
+constexpr int NET_OUTPUT_SIZE = 1;
 
 constexpr int HIP_IDX = 0;
 constexpr int KNEE_IDX = 1;
@@ -18,6 +21,7 @@ constexpr int MOTOR_KNEE_ID = 0x142;
 
 constexpr double CMD_dT = 0.001;
 constexpr double CONTROL_dT = 0.001;
+constexpr double TORCH_dT = 0.0005;
 constexpr double CAN_dT = 0.0025;
 constexpr double VISUAL_dT = 0.01;
 
@@ -72,6 +76,7 @@ typedef struct _SHM_
     double cosAmplitude;
     double cosFrequency;
     double learningRate;
+    double NETInputs[NET_INPUT_SIZE];
     std::string* modelName;
 } SHM, * pSHM;
 
@@ -127,6 +132,7 @@ enum TORCH_STATE
 {
     TORCH_NO_ACT,
     TORCH_LOAD_MODEL,
+    TORCH_ESTIMATION,
     TORCH_ONLINE_LEARNING
 };
 #endif //ESTIMATION_GRF_SHAREDMEMORY_HPP
