@@ -13,10 +13,12 @@
 class SimulCommand
 {
 public:
+    SimulCommand();
     void commandFunction();
 
 private:
     void saveResult();
+    bool mbOnlineLearning;
 };
 
 #endif //RAISIM_SIMULCOMMAND_HPP

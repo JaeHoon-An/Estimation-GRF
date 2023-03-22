@@ -7,6 +7,12 @@
 extern pUI_COMMAND sharedCommand;
 extern pSHM sharedMemory;
 
+SimulCommand::SimulCommand()
+: mbOnlineLearning(true)
+{
+
+}
+
 void SimulCommand::commandFunction()
 {
     if (sharedMemory->newCommand)
@@ -54,8 +60,15 @@ void SimulCommand::commandFunction()
         }
         case SIM_ONLINE_LEARNING:
         {
-//            sharedMemory->torchState = TORCH_ONLINE_LEARNING;
-            sharedMemory->torchState = TORCH_ESTIMATION;
+            if(mbOnlineLearning)
+            {
+                sharedMemory->torchState = TORCH_ONLINE_LEARNING;
+            }
+            else
+            {
+                sharedMemory->torchState = TORCH_ESTIMATION;
+            }
+            mbOnlineLearning = !mbOnlineLearning;
             break;
         }
         default:
