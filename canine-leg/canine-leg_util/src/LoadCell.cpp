@@ -9,6 +9,7 @@ LoadCell::LoadCell()
     mbIsNegativeValue = false;
     mReadedData = 0;
     mIdx = 0;
+    mOffsetRobotRawWeight = 328300;
     mInclineWeight = 0.01081112031;
     mBiasWeight = -288.7621365;
     mInclineForce = 0.0001060570902;
@@ -154,8 +155,8 @@ void LoadCell::nulling()
     tempBiasWeight = tempSumedWeight / 400.0;
 
     std::cout << mBiasWeight << std::endl;
-    mBiasForce -= tempBiasForce;
-    mBiasWeight -= tempBiasWeight;
+    mBiasForce -= tempBiasForce - (double) mOffsetRobotRawWeight * mInclineForce;
+    mBiasWeight -= tempBiasWeight - (double) mOffsetRobotRawWeight * mInclineWeight;
     std::cout << mBiasWeight << std::endl;
 }
 

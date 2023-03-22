@@ -38,11 +38,11 @@ private:
     int mReadedData;
     int mIdx;
     int mReaded[10];
+    int mOffsetRobotRawWeight;
     double mInclineWeight;
     double mBiasWeight;
     double mInclineForce;
     double mBiasForce;
     double mSensoredWeight;
-
     double mSensoredForce;
 };
