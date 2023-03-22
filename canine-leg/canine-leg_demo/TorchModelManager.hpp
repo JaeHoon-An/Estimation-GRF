@@ -65,6 +65,10 @@ private:
 
 private:
     std::shared_ptr<Net> mANN;
+    torch::Tensor mInputs;
+    torch::Tensor mOutputs;
+    torch::Tensor mTargets;
+    torch::Tensor mLoss;
 };
 
 

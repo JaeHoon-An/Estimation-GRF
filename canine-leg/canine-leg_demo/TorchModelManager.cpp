@@ -9,6 +9,9 @@ extern pSHM sharedMemory;
 TorchModelManager::TorchModelManager()
 {
     mANN = std::make_shared<Net>(NET_INPUT_SIZE, NET_OUTPUT_SIZE);
+    mInputs = torch::randn({ 1, NET_INPUT_SIZE });
+    mOutputs = torch::randn({ 1, NET_OUTPUT_SIZE });
+    mTargets = torch::randn({ 1, NET_OUTPUT_SIZE });
 }
 
 void TorchModelManager::torchFunction()
@@ -64,16 +67,32 @@ void TorchModelManager::loadModel()
 
 void TorchModelManager::estimation()
 {
-    auto inputs = torch::randn({ 1, NET_INPUT_SIZE });
-    auto inputTensorAccessor = inputs.accessor<float, 2>();
+    auto inputTensorAccessor = mInputs.accessor<float, 2>();
     for (int i = 0; i < NET_INPUT_SIZE; i++)
     {
         inputTensorAccessor.data()[i] = sharedMemory->NETInputs[i];
     }
-    sharedMemory->estimatedGRF = mANN->forward(inputs).item<float>();
+    sharedMemory->estimatedGRF = mANN->forward(mInputs).item<float>();
+    std::cout << "[MODEL MANAGER] estimated GRF : " << sharedMemory->estimatedGRF << std::endl;
 }
 
 void TorchModelManager::onlineLearning()
 {
+    torch::optim::SGD optimizer(mANN->parameters(), torch::optim::SGDOptions(0.001));
+//    torch::optim::Adam optimizer(mANN->parameters(), torch::optim::AdamOptions(sharedMemory->learningRate));
+    auto inputTensorAccessor = mInputs.accessor<float, 2>();
+    auto targetTensorAccessor = mTargets.accessor<float, 2>();
 
+    optimizer.zero_grad();
+    for (int i = 0; i < NET_INPUT_SIZE; i++)
+    {
+        inputTensorAccessor.data()[i] = sharedMemory->NETInputs[i];
+    }
+    targetTensorAccessor.data()[0] = sharedMemory->measuredGRF;
+    auto out = mANN->forward(mInputs);
+    auto loss = torch::mse_loss(out, mTargets);
+    loss.backward();
+    optimizer.step();
+    std::cout << "[MODEL MANAGER] online-learning loss : " << loss.item<float>() << std::endl;
+    sharedMemory->estimatedGRF = out.item<float>();
 }
