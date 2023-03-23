@@ -10,9 +10,9 @@ LoadCell::LoadCell()
     mReadedData = 0;
     mIdx = 0;
     mOffsetRobotRawWeight = 328300;
-    mInclineWeight = 0.01081112031;
+    mInclineWeight = 0.00001081112031;
     mBiasWeight = -288.7621365;
-    mInclineForce = 0.0001060570902;
+    mInclineForce = mInclineWeight * 9.81 ;
     mBiasForce = -2.832756559;
     mSensoredWeight = 0;
     mSensoredForce = 0;
