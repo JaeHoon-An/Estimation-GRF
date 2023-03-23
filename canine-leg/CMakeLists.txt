@@ -23,7 +23,7 @@ include_directories(
         canine-leg_GUI
 )
 
-add_executable(canine-leg-left-data canine-leg_demo/DataCollector.cpp)
+add_executable(canine-leg-left-data canine-leg_demo/DataCollectorSimulation.cpp)
 target_link_libraries(canine-leg-left-data
         PUBLIC
         Qt5::Widgets
