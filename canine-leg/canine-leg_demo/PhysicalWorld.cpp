@@ -5,7 +5,7 @@
 
 #include "TorchModelManager.hpp"
 #include <canine-leg_real/PhysicalWorldMain.hpp>
-#include <SimulationGUI/mainwindow.h>
+#include <ControlGUI/mainwindow.h>
 #include <QApplication>
 
 

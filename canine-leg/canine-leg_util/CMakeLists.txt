@@ -10,6 +10,7 @@ include_directories(
 
 add_library(canine-leg_util
         SHARED
+        src/CANMotor.cpp
         src/CosTrajectoryGenerator.cpp
         src/JointPDController.cpp
         src/LoadCell.cpp

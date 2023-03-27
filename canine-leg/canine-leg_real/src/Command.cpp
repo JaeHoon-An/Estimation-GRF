@@ -22,43 +22,47 @@ void Command::commandFunction()
 
         switch (incomingCommand)
         {
-        case SIM_NO_ACT:
+        case NO_ACT:
         {
             break;
         }
-        case SIM_MOTOR_ON:
+        case CAN_ON:
         {
             break;
         }
-        case SIM_MOTOR_OFF:
+        case MOTOR_ON:
         {
             break;
         }
-        case SIM_HOME:
+        case MOTOR_OFF:
+        {
+            break;
+        }
+        case HOME:
         {
             sharedMemory->controlState = STATE_HOME_READY;
             break;
         }
-        case SIM_SETPARAMS:
+        case SETPARAMS:
         {
             break;
         }
-        case SIM_CUBIC_CONTROL:
+        case CUBIC_CONTROL:
         {
             sharedMemory->controlState = STATE_CUBIC_READY;
             break;
         }
-        case SIM_COS_CONTROL:
+        case COS_CONTROL:
         {
             sharedMemory->controlState = STATE_COS_READY;
             break;
         }
-        case SIM_LOAD_MODEL:
+        case LOAD_MODEL:
         {
             sharedMemory->torchState = TORCH_LOAD_MODEL;
             break;
         }
-        case SIM_ONLINE_LEARNING:
+        case ONLINE_LEARNING:
         {
             if(mbOnlineLearning)
             {
@@ -71,7 +75,7 @@ void Command::commandFunction()
             mbOnlineLearning = !mbOnlineLearning;
             break;
         }
-        case SIM_SAVE_DATA:
+        case SAVE_DATA:
         {
             writeToCSVfile();
             break;
@@ -86,7 +90,7 @@ void Command::writeToCSVfile()
 {
     std::string name2;
     name2.append(DATASET_DIR);
-    name2.append("GRFDatasetsSimTransfer.csv");
+    name2.append("GRFDatasetsRealWorld.csv");
     std::ofstream file2(name2.c_str());
     for (int i = 0; i < sharedMemory->dataIdx; i++)
     {

@@ -15,17 +15,6 @@ constexpr int GRF_BUFFER_SIZE = 3;
 constexpr int NET_INPUT_SIZE = 14;
 constexpr int NET_OUTPUT_SIZE = 1;
 
-constexpr int HIP_IDX = 0;
-constexpr int KNEE_IDX = 1;
-constexpr int MOTOR_HIP_ID = 0x141;
-constexpr int MOTOR_KNEE_ID = 0x142;
-
-constexpr double CMD_dT = 0.001;
-constexpr double CONTROL_dT = 0.001;
-constexpr double TORCH_dT = 0.0005;
-constexpr double CAN_dT = 0.0025;
-constexpr double VISUAL_dT = 0.01;
-
 constexpr double DEFAULT_Kp = 70.0;
 constexpr double DEFAULT_Kd = 2.5;
 constexpr double DEFAULT_CUTOFF_FREQ = 50.0;
@@ -34,6 +23,21 @@ constexpr double DEFAULT_CUBIC_TIME = 2.0;
 constexpr double DEFAULT_COS_AMPLITUDE = 0.05;
 constexpr double DEFAULT_COS_FREQUENCY = 0.5;
 constexpr double DEFAULT_LEARNING_RATE = 0.001;
+
+constexpr double CMD_dT = 0.001;
+constexpr double CONTROL_dT = 0.001;
+constexpr double TORCH_dT = 0.0005;
+constexpr double CAN_dT = 0.0025;
+constexpr double VISUAL_dT = 0.01;
+
+constexpr double LINK1_LENGTH = 0.23;
+constexpr double LINK2_LENGTH = 0.23;
+constexpr int HIP_IDX = 0;
+constexpr int KNEE_IDX = 1;
+constexpr int MOTOR_HIP_ID = 0x141;
+constexpr int MOTOR_KNEE_ID = 0x142;
+constexpr double HIP_POS_OFFSET = 0.0;
+constexpr double KNEE_POS_OFFSET = 0.0;
 
 typedef struct _UI_COMMAND_
 {
@@ -123,17 +127,25 @@ enum COMMAND
 {
     NO_ACT,
     CAN_ON,
-    VISUAL_ON,
     MOTOR_ON,
     MOTOR_OFF,
-    RESET,
     HOME,
-    PD_CMD,
+    SETPARAMS,
+    CUBIC_CONTROL,
+    COS_CONTROL,
+    LOAD_MODEL,
+    ONLINE_LEARNING,
+    SAVE_DATA
 };
 
 enum CAN_STATE
 {
-    CAN_NO_ACT
+    CAN_NO_ACT,
+    CAN_INIT,
+    CAN_MOTOR_ON,
+    CAN_MOTOR_OFF,
+    CAN_SET_TORQUE,
+    CAN_READ_ERROR
 };
 
 enum TORCH_STATE
