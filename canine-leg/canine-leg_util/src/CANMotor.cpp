@@ -6,14 +6,11 @@
 
 extern pSHM sharedMemory;
 
-CanMotor::CanMotor(std::string canName)
+CANMotor::CANMotor(std::string canName)
     : mCanName(canName)
 {
     enc2rad = 2.0 * 3.141592 / 65535;
     mSock = 0;
-//    mGearRatio = 6;
-//    torque2int[HIP_IDX] = 71.0227;
-//    torque2int[KNEE_IDX] = 71.0227;
 
     mGearRatio = 9;
     torque2int[HIP_IDX] = 24.0385;
@@ -45,7 +42,7 @@ CanMotor::CanMotor(std::string canName)
     }
 }
 
-void CanMotor::CanFunction()
+void CANMotor::CanFunction()
 {
     switch (sharedMemory->canState)
     {
@@ -87,7 +84,7 @@ void CanMotor::CanFunction()
     }
 }
 
-void CanMotor::canInit()
+void CANMotor::canInit()
 {
     std::string command3 =
         "sudo ip link set " + mCanName + " up type can bitrate 1000000";
@@ -126,7 +123,7 @@ void CanMotor::canInit()
     sharedMemory->canStatus = true;
 }
 
-void CanMotor::canSend(int motorIndex, const u_int8_t* data)
+void CANMotor::canSend(int motorIndex, const u_int8_t* data)
 {
     u_int32_t tempid = mMotorId[motorIndex] & 0x1fffffff;
     mFrame.can_id = tempid;
@@ -140,12 +137,12 @@ void CanMotor::canSend(int motorIndex, const u_int8_t* data)
     }
 }
 
-void CanMotor::canRead()
+void CANMotor::canRead()
 {
     read(mSock, &mFrame, sizeof(mFrame));
 }
 
-void CanMotor::readEncoder()
+void CANMotor::readEncoder()
 {
     for (int motorIndex = 0; motorIndex < MOTOR_NUM; motorIndex++)
     {
@@ -176,7 +173,7 @@ void CanMotor::readEncoder()
     sharedMemory->hipVerticalPosition = LINK1_LENGTH * cos(sharedMemory->motorPosition[HIP_IDX]) + LINK1_LENGTH * cos(sharedMemory->motorPosition[HIP_IDX] + sharedMemory->motorPosition[KNEE_IDX]);
 }
 
-void CanMotor::readMotorErrorStatus()
+void CANMotor::readMotorErrorStatus()
 {
     for (int motorIndex = 0; motorIndex < MOTOR_NUM; motorIndex++)
     {
@@ -192,7 +189,7 @@ void CanMotor::readMotorErrorStatus()
     }
 }
 
-void CanMotor::turnOffMotor()
+void CANMotor::turnOffMotor()
 {
     for (int motorIndex = 0; motorIndex < MOTOR_NUM; motorIndex++)
     {
@@ -203,7 +200,7 @@ void CanMotor::turnOffMotor()
     sharedMemory->motorStatus = false;
 }
 
-void CanMotor::turnOnMotor()
+void CANMotor::turnOnMotor()
 {
     for (int motorIndex = 0; motorIndex < MOTOR_NUM; motorIndex++)
     {
@@ -215,7 +212,7 @@ void CanMotor::turnOnMotor()
     sharedMemory->motorStatus = true;
 }
 
-void CanMotor::setTorque()
+void CANMotor::setTorque()
 {
     double desiredTorque[MOTOR_NUM];
     for (int motorIndex = 0; motorIndex < MOTOR_NUM; motorIndex++)

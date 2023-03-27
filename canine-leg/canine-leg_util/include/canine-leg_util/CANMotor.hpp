@@ -18,10 +18,10 @@
 #include "SharedMemory.hpp"
 #include "CustomMath.hpp"
 
-class CanMotor
+class CANMotor
 {
 public:
-    CanMotor(std::string canName);
+    CANMotor(std::string canName);
     void CanFunction();
 
 private:
