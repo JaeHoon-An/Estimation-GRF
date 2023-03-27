@@ -18,7 +18,11 @@ public:
 
 private:
     void saveResult();
+    void writeToCSVfile();
+
+private:
     bool mbOnlineLearning;
+
 };
 
 #endif //RAISIM_SIMULCOMMAND_HPP

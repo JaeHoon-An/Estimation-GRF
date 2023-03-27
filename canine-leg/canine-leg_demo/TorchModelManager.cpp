@@ -25,7 +25,7 @@ void TorchModelManager::torchFunction()
     case TORCH_LOAD_MODEL:
     {
         loadModel();
-        sharedMemory->torchState = TORCH_NO_ACT;
+        sharedMemory->torchState = TORCH_ESTIMATION;
         break;
     }
     case TORCH_ESTIMATION:
@@ -73,7 +73,7 @@ void TorchModelManager::estimation()
         inputTensorAccessor.data()[i] = sharedMemory->NETInputs[i];
     }
     sharedMemory->estimatedGRF = mANN->forward(mInputs).item<float>();
-    std::cout << "[MODEL MANAGER] estimated GRF : " << sharedMemory->estimatedGRF << std::endl;
+//    std::cout << "[MODEL MANAGER] estimated GRF : " << sharedMemory->estimatedGRF << std::endl;
 }
 
 void TorchModelManager::onlineLearning()

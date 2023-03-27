@@ -352,8 +352,10 @@ void MainWindow::on_BT_MODEL_LOAD_clicked()
 
 void MainWindow::on_BT_MODEL_ONLINE_LEARNING_clicked()
 {
-    sharedMemory->learningRate = ui->LE_MODEL_PARAMS_LEARNING_RATE->text().toDouble();
-    sharedCommand->userCommand = SIM_ONLINE_LEARNING;
+//    sharedMemory->learningRate = ui->LE_MODEL_PARAMS_LEARNING_RATE->text().toDouble();
+//    sharedCommand->userCommand = SIM_ONLINE_LEARNING;
+
+    sharedCommand->userCommand = SIM_SAVE_DATA;
     sharedMemory->newCommand = true;
 }
 

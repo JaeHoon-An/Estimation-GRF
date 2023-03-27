@@ -71,8 +71,38 @@ void SimulCommand::commandFunction()
             mbOnlineLearning = !mbOnlineLearning;
             break;
         }
+        case SIM_SAVE_DATA:
+        {
+            writeToCSVfile();
+            break;
+        }
         default:
             break;
         }
     }
+}
+
+void SimulCommand::writeToCSVfile()
+{
+    std::string name2;
+    name2.append(DATASET_DIR);
+    name2.append("GRFDatasetsSimTransfer.csv");
+    std::ofstream file2(name2.c_str());
+    for (int i = 0; i < sharedMemory->dataIdx; i++)
+    {
+        for (int j = 0; j < 11; j++)
+        {
+            std::string str = std::to_string(sharedMemory->dataForTransferLearning[i][j]);
+            if (j + 1 == 11)
+            {
+                file2 << str;
+            }
+            else
+            {
+                file2 << str << ',';
+            }
+        }
+        file2 << '\n';
+    }
+    std::cout << "Data is saved." << std::endl;
 }

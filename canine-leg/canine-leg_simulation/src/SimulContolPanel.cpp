@@ -11,6 +11,8 @@ SimulControlPanel::SimulControlPanel(raisim::World* world, raisim::ArticulatedSy
     : mWorld(world)
     , mRobot(robot)
     , mIteration(0)
+    , mMotionTableIdx(0)
+    , mReferenceTime(0.0)
 {
     mTorque.setZero();
     clearBuffer();
@@ -41,24 +43,45 @@ void SimulControlPanel::ControllerFunction()
     }
     case STATE_CUBIC_READY:
     {
+        sharedMemory->cubicGoalHeight = sharedMemory->motionTableOffset[mMotionTableIdx];
+        sharedMemory->cosAmplitude = sharedMemory->motionTableAmplitude[mMotionTableIdx];
+        sharedMemory->cosFrequency = sharedMemory->motionTableFrequency[mMotionTableIdx];
+        mMotionTableIdx++;
+        std::cout << "[SYSTEM] offset, amplitude, frequency : " << sharedMemory->cubicGoalHeight << ", " << sharedMemory->cosAmplitude << ", " << sharedMemory->cosFrequency << std::endl;\
         PDcontrol.InitCubicTrajectory();
+        mReferenceTime = sharedMemory->localTime;
+        sharedMemory->dataCollectStopFlag = false;
         sharedMemory->controlState = STATE_CUBIC_CONTROL;
         break;
     }
     case STATE_CUBIC_CONTROL:
     {
         PDcontrol.DoCubicControl();
+        if(sharedMemory->localTime >= mReferenceTime + 2.0)
+        {
+            sharedMemory->controlState = STATE_COS_READY;
+        }
         break;
     }
     case STATE_COS_READY:
     {
         PDcontrol.InitCosTrajectory();
+        mReferenceTime = sharedMemory->localTime;
         sharedMemory->controlState = STATE_COS_CONTROL;
         break;
     }
     case STATE_COS_CONTROL:
     {
         PDcontrol.DoCosControl();
+        if(sharedMemory->dataCollectStopFlag)
+        {
+            sharedMemory->controlState = STATE_CUBIC_READY;
+            if(mMotionTableIdx == 27)
+            {
+                std::cout << "[SYSTEM] Collecting data is end. " << std::endl;
+                sharedMemory->controlState = STATE_HOME_READY;
+            }
+        }
         break;
     }
     default:
@@ -89,16 +112,18 @@ void SimulControlPanel::integrateSimul()
 
 void SimulControlPanel::updateStates()
 {
-//    double pastHipVerticalVelocity;
-//    pastHipVerticalVelocity = sharedMemory->hipVerticalVelocity;
-    sharedMemory->hipVerticalPosition = mRobot->getGeneralizedCoordinate()[0];
+    const double mean = 0.0;
+    const double stddev = 0.075;
+    std::mt19937 generator(std::random_device{}());
+    std::normal_distribution<double> dist_vel(mean, stddev);
     sharedMemory->motorPosition[0] = mRobot->getGeneralizedCoordinate()[1];
     sharedMemory->motorPosition[1] = mRobot->getGeneralizedCoordinate()[2];
     sharedMemory->hipVerticalVelocity = mRobot->getGeneralizedVelocity()[0];
-//    sharedMemory->hipVerticalAcceleration = (sharedMemory->hipVerticalVelocity - pastHipVerticalVelocity) / CONTROL_dT;
+//    sharedMemory->motorVelocity[0] = mRobot->getGeneralizedVelocity()[1] + dist_vel(generator);
+//    sharedMemory->motorVelocity[1] = mRobot->getGeneralizedVelocity()[2] + dist_vel(generator);
     sharedMemory->motorVelocity[0] = mRobot->getGeneralizedVelocity()[1];
     sharedMemory->motorVelocity[1] = mRobot->getGeneralizedVelocity()[2];
-
+    sharedMemory->hipVerticalPosition = 0.23 * cos (sharedMemory->motorPosition[0]) + 0.23 * cos (sharedMemory->motorPosition[0] + sharedMemory->motorPosition[1]);
     sharedMemory->motorTorque[0] = sharedMemory->motorDesiredTorque[0];
     sharedMemory->motorTorque[1] = sharedMemory->motorDesiredTorque[1];
 
@@ -110,7 +135,7 @@ void SimulControlPanel::updateStates()
 
 void SimulControlPanel::clearBuffer()
 {
-    for (int i = 0; i < BUFFER_SIZE ; i++)
+    for (int i = 0; i < NET_INPUT_BUFFER_SIZE ; i++)
     {
         for (int j = 0; j < 2 ; j++)
         {

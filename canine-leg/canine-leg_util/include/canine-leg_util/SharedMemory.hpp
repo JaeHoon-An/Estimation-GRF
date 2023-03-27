@@ -10,7 +10,8 @@
 constexpr int MAX_COMMAND_DATA = 10;
 constexpr int MAX_CUSTOM_DATA = 20;
 constexpr int MOTOR_NUM = 2;
-constexpr int BUFFER_SIZE = 41;
+constexpr int NET_INPUT_BUFFER_SIZE = 41;
+constexpr int GRF_BUFFER_SIZE = 3;
 constexpr int NET_INPUT_SIZE = 14;
 constexpr int NET_OUTPUT_SIZE = 1;
 
@@ -44,6 +45,7 @@ typedef struct _SHM_
     bool newCommand;
     bool canStatus;
     bool motorStatus;
+    bool dataCollectStopFlag;
 
     int controlState;
     int visualState;
@@ -51,7 +53,7 @@ typedef struct _SHM_
     int torchState;
     int motorErrorStatus[MOTOR_NUM];
     int motorTemp[MOTOR_NUM];
-
+    int dataIdx;
     double localTime;
     double desiredHipVerticalPosition;
     double desiredHipVerticalVelocity;
@@ -77,6 +79,11 @@ typedef struct _SHM_
     double cosFrequency;
     double learningRate;
     double NETInputs[NET_INPUT_SIZE];
+
+    double motionTableOffset[27];
+    double motionTableAmplitude[27];
+    double motionTableFrequency[27];
+    double dataForTransferLearning[200000][11];
     std::string* modelName;
 } SHM, * pSHM;
 
@@ -102,6 +109,7 @@ enum SIMULATION_COMMAND
     SIM_COS_CONTROL,
     SIM_LOAD_MODEL,
     SIM_ONLINE_LEARNING,
+    SIM_SAVE_DATA
 };
 
 enum VISUAL_STATE

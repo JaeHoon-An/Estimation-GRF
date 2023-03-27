@@ -12,7 +12,7 @@ pSHM sharedMemory;
 
 raisim::World world;
 raisim::RaisimServer server(&world);
-raisim::ArticulatedSystem* robot = world.addArticulatedSystem(std::string(URDF_RSC_DIR) + "/canine_leg_left/canine_leg_left.urdf");
+raisim::ArticulatedSystem* robot = world.addArticulatedSystem(std::string(URDF_RSC_DIR) + "/canine_leg_left/canine_leg_left_V2.urdf");
 
 SimulCommand userCommand;
 SimulVisualizer Visualizer(&world, robot, &server);
@@ -61,10 +61,12 @@ void clearSharedMemory()
     sharedMemory->newCommand = false;
     sharedMemory->canStatus = false;
     sharedMemory->motorStatus = false;
+    sharedMemory->dataCollectStopFlag = false;
     sharedMemory->controlState = STATE_CONTROL_STOP;
     sharedMemory->visualState = VISUAL_STOP;
     sharedMemory->canState = CAN_NO_ACT;
     sharedMemory->torchState = TORCH_NO_ACT;
+    sharedMemory->dataIdx = 0;
     sharedMemory->localTime = 0;
     sharedMemory->desiredHipVerticalPosition = 0;
     sharedMemory->desiredHipVerticalVelocity = 0;
@@ -94,6 +96,101 @@ void clearSharedMemory()
     sharedMemory->cosAmplitude = DEFAULT_COS_AMPLITUDE;
     sharedMemory->cosFrequency = DEFAULT_COS_FREQUENCY;
     sharedMemory->learningRate = DEFAULT_LEARNING_RATE;
+
+    for(int i = 0; i < 200000 ; i++)
+    {
+        for(int j = 0 ; j < 11 ; j++)
+        {
+            sharedMemory->dataForTransferLearning[i][j] = 0.0;
+        }
+    }
+    int idx = 0;
+    sharedMemory->motionTableOffset[idx*9]     = 0.2;
+    sharedMemory->motionTableOffset[idx*9 + 1] = 0.2;
+    sharedMemory->motionTableOffset[idx*9 + 2] = 0.2;
+    sharedMemory->motionTableOffset[idx*9 + 3] = 0.2;
+    sharedMemory->motionTableOffset[idx*9 + 4] = 0.2;
+    sharedMemory->motionTableOffset[idx*9 + 5] = 0.2;
+    sharedMemory->motionTableOffset[idx*9 + 6] = 0.2;
+    sharedMemory->motionTableOffset[idx*9 + 7] = 0.2;
+    sharedMemory->motionTableOffset[idx*9 + 8] = 0.2;
+    sharedMemory->motionTableAmplitude[idx*9]     = 0.01;
+    sharedMemory->motionTableAmplitude[idx*9 + 1] = 0.01;
+    sharedMemory->motionTableAmplitude[idx*9 + 2] = 0.01;
+    sharedMemory->motionTableAmplitude[idx*9 + 3] = 0.015;
+    sharedMemory->motionTableAmplitude[idx*9 + 4] = 0.015;
+    sharedMemory->motionTableAmplitude[idx*9 + 5] = 0.015;
+    sharedMemory->motionTableAmplitude[idx*9 + 6] = 0.025;
+    sharedMemory->motionTableAmplitude[idx*9 + 7] = 0.025;
+    sharedMemory->motionTableAmplitude[idx*9 + 8] = 0.025;
+    sharedMemory->motionTableFrequency[idx*9]     = 0.25;
+    sharedMemory->motionTableFrequency[idx*9 + 1] = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 2] = 0.75;
+    sharedMemory->motionTableFrequency[idx*9 + 3] = 0.25;
+    sharedMemory->motionTableFrequency[idx*9 + 4] = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 5] = 0.75;
+    sharedMemory->motionTableFrequency[idx*9 + 6] = 0.25;
+    sharedMemory->motionTableFrequency[idx*9 + 7] = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 8] = 0.75;
+
+    idx = 1;
+    sharedMemory->motionTableOffset[idx*9]     = 0.3;
+    sharedMemory->motionTableOffset[idx*9 + 1] = 0.3;
+    sharedMemory->motionTableOffset[idx*9 + 2] = 0.3;
+    sharedMemory->motionTableOffset[idx*9 + 3] = 0.3;
+    sharedMemory->motionTableOffset[idx*9 + 4] = 0.3;
+    sharedMemory->motionTableOffset[idx*9 + 5] = 0.3;
+    sharedMemory->motionTableOffset[idx*9 + 6] = 0.3;
+    sharedMemory->motionTableOffset[idx*9 + 7] = 0.3;
+    sharedMemory->motionTableOffset[idx*9 + 8] = 0.3;
+    sharedMemory->motionTableAmplitude[idx*9]     = 0.025;
+    sharedMemory->motionTableAmplitude[idx*9 + 1] = 0.025;
+    sharedMemory->motionTableAmplitude[idx*9 + 2] = 0.025;
+    sharedMemory->motionTableAmplitude[idx*9 + 3] = 0.040;
+    sharedMemory->motionTableAmplitude[idx*9 + 4] = 0.040;
+    sharedMemory->motionTableAmplitude[idx*9 + 5] = 0.040;
+    sharedMemory->motionTableAmplitude[idx*9 + 6] = 0.070;
+    sharedMemory->motionTableAmplitude[idx*9 + 7] = 0.070;
+    sharedMemory->motionTableAmplitude[idx*9 + 8] = 0.070;
+    sharedMemory->motionTableFrequency[idx*9]     = 0.25;
+    sharedMemory->motionTableFrequency[idx*9 + 1] = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 2] = 0.75;
+    sharedMemory->motionTableFrequency[idx*9 + 3] = 0.25;
+    sharedMemory->motionTableFrequency[idx*9 + 4] = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 5] = 0.75;
+    sharedMemory->motionTableFrequency[idx*9 + 6] = 0.25;
+    sharedMemory->motionTableFrequency[idx*9 + 7] = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 8] = 0.75;
+
+    idx = 2;
+    sharedMemory->motionTableOffset[idx*9]     = 0.36;
+    sharedMemory->motionTableOffset[idx*9 + 1] = 0.36;
+    sharedMemory->motionTableOffset[idx*9 + 2] = 0.36;
+    sharedMemory->motionTableOffset[idx*9 + 3] = 0.36;
+    sharedMemory->motionTableOffset[idx*9 + 4] = 0.36;
+    sharedMemory->motionTableOffset[idx*9 + 5] = 0.36;
+    sharedMemory->motionTableOffset[idx*9 + 6] = 0.36;
+    sharedMemory->motionTableOffset[idx*9 + 7] = 0.36;
+    sharedMemory->motionTableOffset[idx*9 + 8] = 0.36;
+    sharedMemory->motionTableAmplitude[idx*9]     = 0.05;
+    sharedMemory->motionTableAmplitude[idx*9 + 1] = 0.05;
+    sharedMemory->motionTableAmplitude[idx*9 + 2] = 0.05;
+    sharedMemory->motionTableAmplitude[idx*9 + 3] = 0.075;
+    sharedMemory->motionTableAmplitude[idx*9 + 4] = 0.075;
+    sharedMemory->motionTableAmplitude[idx*9 + 5] = 0.075;
+    sharedMemory->motionTableAmplitude[idx*9 + 6] = 0.10;
+    sharedMemory->motionTableAmplitude[idx*9 + 7] = 0.10;
+    sharedMemory->motionTableAmplitude[idx*9 + 8] = 0.10;
+    sharedMemory->motionTableFrequency[idx*9]     = 0.25;
+    sharedMemory->motionTableFrequency[idx*9 + 1] = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 2] = 0.75;
+    sharedMemory->motionTableFrequency[idx*9 + 3] = 0.25;
+    sharedMemory->motionTableFrequency[idx*9 + 4] = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 5] = 0.75;
+    sharedMemory->motionTableFrequency[idx*9 + 6] = 0.25;
+    sharedMemory->motionTableFrequency[idx*9 + 7] = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 8] = 0.75;
+
 }
 
 void StartSimulation()

@@ -28,11 +28,13 @@ private:
 private:
     raisim::World* mWorld;
     raisim::ArticulatedSystem* mRobot;
+    raisim::VecDyn mTorque = raisim::VecDyn(3);
     JointPDController PDcontrol;
     uint64_t mIteration;
-    double mBufferPosition [BUFFER_SIZE][MOTOR_NUM];
-    double mBufferVelocity [BUFFER_SIZE][MOTOR_NUM];
-    raisim::VecDyn mTorque = raisim::VecDyn(3);
+    int mMotionTableIdx;
+    double mBufferPosition [NET_INPUT_BUFFER_SIZE][MOTOR_NUM];
+    double mBufferVelocity [NET_INPUT_BUFFER_SIZE][MOTOR_NUM];
+    double mReferenceTime;
 };
 
 #endif //RAISIM_SIMULCONTROLPANEL_HPP

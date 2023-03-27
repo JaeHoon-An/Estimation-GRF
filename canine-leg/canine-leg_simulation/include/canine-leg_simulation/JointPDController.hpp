@@ -8,7 +8,8 @@
 #include <canine-leg_util/SharedMemory.hpp>
 #include <canine-leg_util/CosTrajectoryGenerator.hpp>
 #include <camel-tools/CubicTrajectoryGenerator.hpp>
-
+#include <iostream>
+#include <math.h>
 
 class JointPDController
 {
@@ -29,13 +30,19 @@ private:
     void setCosTrajectory();
     void solveIK();
     void computeControlInput();
+    void updateBuffer();
+    void collectData();
 
 
 private:
     CubicTrajectoryGenerator mCubicTrajectoryGen[MOTOR_NUM];
     CubicTrajectoryGenerator mCubicTrajectoryGenHipVertical;
     CosTrajectoryGenerator mCosTrajectoryGenerator;
-    bool mIsFirstGenTraj;
+    Eigen::MatrixXd mGRFBuffer = Eigen::MatrixXd(10, 1);
+    bool mbFirstGenTraj;
+    bool mbCollectFlag;
+    int mIteration;
+    int mPeriod;
     double mPastDesiredPosition[MOTOR_NUM];
     double mDesiredPosition[MOTOR_NUM];
     double mDesiredVelocity[MOTOR_NUM];
