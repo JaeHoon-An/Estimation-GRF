@@ -2,7 +2,7 @@
 // Created by camel on 22. 9. 21.
 //
 
-#include <canine-leg_simulation/JointPDController.hpp>
+#include <canine-leg_util/JointPDController.hpp>
 
 extern pSHM sharedMemory;
 

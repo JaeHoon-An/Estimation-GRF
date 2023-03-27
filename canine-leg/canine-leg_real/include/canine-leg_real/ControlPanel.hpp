@@ -11,10 +11,10 @@
 #include <canine-leg_util/SharedMemory.hpp>
 #include <canine-leg_util/JointPDController.hpp>
 
-class SimulControlPanel
+class ControlPanel
 {
 public:
-    SimulControlPanel(raisim::World* world, raisim::ArticulatedSystem* robot);
+    ControlPanel(raisim::World* world, raisim::ArticulatedSystem* robot);
 
     void ControllerFunction();
 

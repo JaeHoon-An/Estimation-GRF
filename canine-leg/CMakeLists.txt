@@ -15,11 +15,13 @@ find_package(camel-tools-filter REQUIRED)
 
 add_subdirectory(canine-leg_util)
 add_subdirectory(canine-leg_simulation)
+add_subdirectory(canine-leg_real)
 
 include_directories(
         ${EIGEN3_INCLUDE_DIRS}
         ${canine-leg_util_SOURCE_DIR}/include
         ${canine-leg_simulation_SOURCE_DIR}/include
+        ${canine-leg_real_SOURCE_DIR}/include
         canine-leg_GUI
 )
 
@@ -38,7 +40,6 @@ add_executable(canine-leg-left-simulation
         canine-leg_demo/TorchModelManager.cpp
         canine-leg_GUI/SimulationGUI/mainwindow.cpp
         canine-leg_GUI/util/qcustomplot.cpp)
-
 target_link_libraries(canine-leg-left-simulation
         PUBLIC
         "${TORCH_LIBRARIES}"
@@ -50,6 +51,25 @@ target_link_libraries(canine-leg-left-simulation
         canine-leg_simulation
         camel-tools-filter
         )
+set_property(TARGET canine-leg-left-simulation PROPERTY CXX_STANDARD 14)
+
+add_executable(canine-leg-left-real
+        canine-leg_demo/PhysicalWorld.cpp
+        canine-leg_demo/TorchModelManager.cpp
+        canine-leg_GUI/SimulationGUI/mainwindow.cpp
+        canine-leg_GUI/util/qcustomplot.cpp)
+target_link_libraries(canine-leg-left-real
+        PUBLIC
+        "${TORCH_LIBRARIES}"
+        Qt5::Widgets
+        raisim
+        pthread
+        PRIVATE
+        canine-leg_util
+        canine-leg_real
+        camel-tools-filter
+        )
+set_property(TARGET canine-leg-left-real PROPERTY CXX_STANDARD 14)
 
 add_executable(GRFtest canine-leg_demo/GRFTest.cpp)
 target_link_libraries(GRFtest
@@ -57,4 +77,3 @@ target_link_libraries(GRFtest
         camel-tools-filter
         )
 
-set_property(TARGET canine-leg-left-simulation PROPERTY CXX_STANDARD 14)

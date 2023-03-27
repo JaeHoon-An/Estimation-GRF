@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(canine-leg_simulation LANGUAGES CXX)
+project(canine-leg_real LANGUAGES CXX)
 
 find_package(camel-tools-thread REQUIRED)
 find_package(camel-tools-trajectory REQUIRED)
@@ -12,10 +12,10 @@ include_directories(
 
 add_library(${PROJECT_NAME}
         STATIC
-        src/SimulMain.cpp
-        src/SimulContolPanel.cpp
-        src/SimulVisualizer.cpp
-        src/SimulCommand.cpp)
+        src/PhysicalWorldMain.cpp
+        src/ControlPanel.cpp
+        src/Visualizer.cpp
+        src/Command.cpp)
 
 target_link_libraries(${PROJECT_NAME}
         PUBLIC
