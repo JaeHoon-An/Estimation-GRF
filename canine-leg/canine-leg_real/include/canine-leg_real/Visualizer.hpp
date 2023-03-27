@@ -16,6 +16,7 @@ public:
                     raisim::ArticulatedSystem* robot,
                     raisim::RaisimServer* server);
     ~Visualizer();
+    void UpdateVisual();
 
 private:
     void initRobotPose();

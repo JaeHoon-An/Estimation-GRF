@@ -24,6 +24,25 @@ Visualizer::~Visualizer()
     mServer->killServer();
 }
 
+void Visualizer::UpdateVisual()
+{
+    Eigen::VectorXd jointPosition(mRobot->getGeneralizedCoordinateDim());
+    Eigen::VectorXd jointVelocity(mRobot->getGeneralizedVelocityDim());
+    jointPosition.setZero();
+    jointVelocity.setZero();
+
+    jointPosition[0] = sharedMemory->hipVerticalPosition;
+    jointPosition[1] = sharedMemory->motorPosition[HIP_IDX];
+    jointPosition[2] = sharedMemory->motorPosition[KNEE_IDX];
+
+    jointVelocity[0] = sharedMemory->hipVerticalVelocity;
+    jointVelocity[1] = sharedMemory->motorVelocity[HIP_IDX];
+    jointVelocity[2] = sharedMemory->motorVelocity[KNEE_IDX];
+
+    mRobot->setGeneralizedCoordinate(jointPosition);
+    mRobot->setGeneralizedVelocity(jointVelocity);
+}
+
 void Visualizer::initRobotPose()
 {
     Eigen::VectorXd initialJointPosition(mRobot->getGeneralizedCoordinateDim());

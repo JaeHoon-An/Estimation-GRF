@@ -5,7 +5,8 @@
 #include <canine-leg_real/PhysicalWorldMain.hpp>
 
 pthread_t RTThreadController;
-pthread_t NRTThreadCommand;
+pthread_t NRTThreadCommandAndVisual;
+pthread_t NRTThreadCAN;
 
 pUI_COMMAND sharedCommand;
 pSHM sharedMemory;
@@ -15,16 +16,28 @@ raisim::RaisimServer server(&world);
 raisim::ArticulatedSystem* robot = world.addArticulatedSystem(std::string(URDF_RSC_DIR) + "/canine_leg_left/canine_leg_left_V2.urdf");
 
 Command userCommand;
-Visualizer Visualizer(&world, robot, &server);
-ControlPanel ControlPanel(&world, robot);
+Visualizer visualizer(&world, robot, &server);
+ControlPanel controlPanel;
+CANMotor canMotor("can14");
 
-void* NRTCommandThread(void* arg)
+void* NRTCommandAndVisualThread(void* arg)
 {
     std::cout << "entered #nrt_command_thread" << std::endl;
     while (true)
     {
         userCommand.commandFunction();
+        visualizer.UpdateVisual();
         usleep(CMD_dT * 1e6);
+    }
+}
+
+void* NRTCANThread(void* arg)
+{
+    std::cout << "entered #nrt_CAN_thread" << std::endl;
+    while (true)
+    {
+        canMotor.CanFunction();
+        usleep(10);
     }
 }
 
@@ -44,7 +57,7 @@ void* RTControllerThread(void* arg)
         clock_gettime(CLOCK_REALTIME, &TIME_NOW); //현재 시간 구함
         timespec_add_us(&TIME_NEXT, PERIOD_US);   //목표 시간 구함
 
-        ControlPanel.ControllerFunction();
+        controlPanel.ControllerFunction();
 
         clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &TIME_NEXT, NULL); //목표시간까지 기다림 (현재시간이 이미 오바되어 있으면 바로 넘어갈 듯)
         if (timespec_cmp(&TIME_NOW, &TIME_NEXT) > 0)
@@ -201,5 +214,6 @@ void StartFSM()
 
     server.launchServer(8080);
     int thread_id_rt1 = generate_rt_thread(RTThreadController, RTControllerThread, "rt_thread1", 6, 99, NULL);
-    int thread_id_nrt1 = generate_nrt_thread(NRTThreadCommand, NRTCommandThread, "nrt_thread1", 1, NULL);
+    int thread_id_nrt1 = generate_nrt_thread(NRTThreadCommandAndVisual, NRTCommandAndVisualThread, "nrt_thread1", 1, NULL);
+    int thread_id_nrt2 = generate_nrt_thread(NRTThreadCAN, NRTCANThread, "nrt_thread2", 2, NULL);
 }

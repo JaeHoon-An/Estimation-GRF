@@ -14,21 +14,16 @@
 class ControlPanel
 {
 public:
-    ControlPanel(raisim::World* world, raisim::ArticulatedSystem* robot);
+    ControlPanel();
 
     void ControllerFunction();
 
 private:
-    void integrateSimul();
-    void updateStates();
     void clearBuffer();
     void updateBuffer();
     void updateNetInputs();
 
 private:
-    raisim::World* mWorld;
-    raisim::ArticulatedSystem* mRobot;
-    raisim::VecDyn mTorque = raisim::VecDyn(3);
     JointPDController PDcontrol;
     uint64_t mIteration;
     int mMotionTableIdx;
