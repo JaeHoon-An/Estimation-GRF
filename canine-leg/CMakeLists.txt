@@ -56,7 +56,7 @@ set_property(TARGET canine-leg-left-simulation PROPERTY CXX_STANDARD 14)
 add_executable(canine-leg-left-real
         canine-leg_demo/PhysicalWorld.cpp
         canine-leg_demo/TorchModelManager.cpp
-        canine-leg_GUI/SimulationGUI/mainwindow.cpp
+        canine-leg_GUI/ControlGUI/mainwindow.cpp
         canine-leg_GUI/util/qcustomplot.cpp)
 target_link_libraries(canine-leg-left-real
         PUBLIC

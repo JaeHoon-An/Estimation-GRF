@@ -1,0 +1,790 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1419</width>
+    <height>1003</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QGroupBox" name="GB_COS">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>560</y>
+      <width>381</width>
+      <height>100</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>COS motion controller</string>
+    </property>
+    <widget class="QLineEdit" name="LE_COS_PARAMS_AMPLITUDE">
+     <property name="geometry">
+      <rect>
+       <x>129</x>
+       <y>33</y>
+       <width>141</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_COS_PARAMS_FREQUENCY">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>63</y>
+       <width>140</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_COS_AMPLITUDE">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>33</y>
+       <width>111</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>Amplitude</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_COS_FREQUENCY">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>63</y>
+       <width>111</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>Frequency</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="BT_COS_CONTROL">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>33</y>
+       <width>89</width>
+       <height>55</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CONTROL</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="GB_MAIN_PANEL">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>-10</y>
+      <width>370</width>
+      <height>100</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string/>
+    </property>
+    <widget class="QPushButton" name="BT_MAIN_PANEL_MOTOR_ON">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>40</y>
+       <width>80</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>MOTOR
+ON</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="BT_MAIN_PANEL_CAN_ON">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>80</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CAN
+ON</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="BT_MAIN_PANEL_HOME">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>40</y>
+       <width>80</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>HOME</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="BT_MAIN_PANEL_MOTOR_OFF">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>40</y>
+       <width>80</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>MOTOR
+OFF</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_MAIN_PANEL_CAN_ON">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>27</y>
+       <width>40</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_MAIN_PANEL_MOTOR_ON">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>27</y>
+       <width>40</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_MAIN_PANEL_HOME">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>27</y>
+       <width>40</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_MAIN_PANEL_MOTOR_OFF">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>27</y>
+       <width>40</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="GB_MODEL_MANAGEMENT">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>670</y>
+      <width>381</width>
+      <height>110</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Model management</string>
+    </property>
+    <widget class="QLineEdit" name="LE_MODEL_LOAD_PATH">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>260</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="BT_MODEL_LOAD">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>30</y>
+       <width>90</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>LOAD</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_MODEL_LEARNING_RATE">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>65</y>
+       <width>130</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Learning rate :</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="BT_MODEL_ONLINE_LEARNING">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>60</y>
+       <width>90</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>ONLINE
+LEARNING</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_MODEL_PARAMS_LEARNING_RATE">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>65</y>
+       <width>130</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>110</y>
+      <width>380</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="GB_CUBIC">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>450</y>
+      <width>381</width>
+      <height>100</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Cubic motion controller</string>
+    </property>
+    <widget class="QLineEdit" name="LE_CUBIC_PARAMS_GOAL_HEIGHT">
+     <property name="geometry">
+      <rect>
+       <x>129</x>
+       <y>33</y>
+       <width>141</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_CUBIC_PARAMS_TIME_DURATION">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>63</y>
+       <width>140</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_CUBIC_GOAL_HEIGHT">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>33</y>
+       <width>111</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>Goal height</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_CUBIC_TIME_DURATION">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>63</y>
+       <width>111</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>Time duration</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="BT_CUBIC_CONTROL">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>33</y>
+       <width>89</width>
+       <height>55</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CONTROL</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>10</y>
+      <width>1010</width>
+      <height>940</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="TW_STATES">
+     <attribute name="title">
+      <string>States</string>
+     </attribute>
+     <widget class="QCustomPlot" name="QCP_STATES_POS_HIP" native="true">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>490</width>
+        <height>290</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="QCP_STATES_POS_KNEE" native="true">
+      <property name="geometry">
+       <rect>
+        <x>510</x>
+        <y>10</y>
+        <width>490</width>
+        <height>290</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="QCP_STATES_VEL_HIP" native="true">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>310</y>
+        <width>490</width>
+        <height>290</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="QCP_STATES_VEL_KNEE" native="true">
+      <property name="geometry">
+       <rect>
+        <x>510</x>
+        <y>310</y>
+        <width>490</width>
+        <height>290</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="QCP_STATES_TAU_HIP" native="true">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>610</y>
+        <width>490</width>
+        <height>290</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="QCP_STATES_TAU_KNEE" native="true">
+      <property name="geometry">
+       <rect>
+        <x>510</x>
+        <y>610</y>
+        <width>490</width>
+        <height>290</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="TW_GRF">
+     <attribute name="title">
+      <string>GRF</string>
+     </attribute>
+     <widget class="QCustomPlot" name="QCP_GRF_GRF" native="true">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>990</width>
+        <height>440</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="QCP_GRF_ERROR" native="true">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>460</y>
+        <width>990</width>
+        <height>440</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="GB_PARAMETERS">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>310</y>
+      <width>381</width>
+      <height>130</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Parameters</string>
+    </property>
+    <widget class="QLineEdit" name="LE_PARAMETERS_PARAMS_Kp">
+     <property name="geometry">
+      <rect>
+       <x>129</x>
+       <y>33</y>
+       <width>141</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_PARAMETERS_PARAMS_Kd">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>63</y>
+       <width>140</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_PARAMETERS_Kp">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>33</y>
+       <width>111</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>Kp</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_PARAMETERS_Kd">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>63</y>
+       <width>111</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>Kd</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="BT_PARAMETERS_SET_PARAMS">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>33</y>
+       <width>89</width>
+       <height>83</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>SET
+PARAMS</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_PARAMETERS_PARAMS_LPF_VEL">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>92</y>
+       <width>140</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="LE_PARAMETERS_LPF_VEL">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>92</y>
+       <width>111</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>LPF Velocity</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="GB_EXPERIMENT_DATA_MANAGEMENT">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>790</y>
+      <width>381</width>
+      <height>62</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Experiment data management</string>
+    </property>
+    <widget class="QLineEdit" name="LE_EXPERIMENT_DATA_PATH">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>29</y>
+       <width>260</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="BT_EXPERIMENT_DATA_SAVE">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>29</y>
+       <width>90</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>SAVE</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="GB_CUSTOM_BUTTON">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>860</y>
+      <width>380</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Custom Button</string>
+    </property>
+    <widget class="QPushButton" name="BT_CUSTOM_BUTTON_CUSTOM_2">
+     <property name="geometry">
+      <rect>
+       <x>103</x>
+       <y>30</y>
+       <width>80</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CUSTOM
+2</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="BT_CUSTOM_BUTTON_CUSTOM_1">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>80</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CUSTOM
+1</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="BT_CUSTOM_BUTTON_CUSTOM_3">
+     <property name="geometry">
+      <rect>
+       <x>197</x>
+       <y>30</y>
+       <width>80</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CUSTOM
+3</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="BT_CUSTOM_BUTTON_CUSTOM_4">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>30</y>
+       <width>80</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CUSTOM
+4</string>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1419</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
