@@ -128,6 +128,11 @@ void clearSharedMemory()
         {
             sharedMemory->dataForTransferLearning[i][j] = 0.0;
         }
+
+        for(int j = 0 ; j < 15 ; j++)
+        {
+            sharedMemory->dataForSupervisedLearning[i][j] = 0.0;
+        }
     }
     int idx = 0;
     sharedMemory->motionTableOffset[idx*9]     = 0.25;

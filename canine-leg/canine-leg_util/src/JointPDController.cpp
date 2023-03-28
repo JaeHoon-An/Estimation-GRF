@@ -87,6 +87,13 @@ void JointPDController::collectData()
         sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][8] = mGRFBuffer(8, 0);
         sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][9] = mGRFBuffer(9, 0);
         sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][10] = sharedMemory->measuredGRF;
+
+        for(int i = 0 ; i < NET_INPUT_SIZE ; i++)
+        {
+            sharedMemory->dataForSupervisedLearning[sharedMemory->dataIdx][i] = sharedMemory->NETInputs[i];
+        }
+        sharedMemory->dataForSupervisedLearning[sharedMemory->dataIdx][14] = sharedMemory->measuredGRF;
+
         sharedMemory->dataIdx += 1;
     }
 }

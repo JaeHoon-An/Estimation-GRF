@@ -88,6 +88,7 @@ typedef struct _SHM_
     double motionTableAmplitude[27];
     double motionTableFrequency[27];
     double dataForTransferLearning[200000][11];
+    double dataForSupervisedLearning[200000][15];
     std::string* modelName;
 } SHM, * pSHM;
 

@@ -103,9 +103,30 @@ void Command::commandFunction()
 
 void Command::writeToCSVfile()
 {
+    std::string name;
+    name.append(DATASET_DIR);
+    name.append("GRFDatasets_real.csv");
+    std::ofstream file(name.c_str());
+    for (int i = 0; i < sharedMemory->dataIdx; i++)
+    {
+        for (int j = 0; j < 15; j++)
+        {
+            std::string str = std::to_string(sharedMemory->dataForSupervisedLearning[i][j]);
+            if (j + 1 == 15)
+            {
+                file << str;
+            }
+            else
+            {
+                file << str << ',';
+            }
+        }
+        file << '\n';
+    }
+
     std::string name2;
     name2.append(DATASET_DIR);
-    name2.append("GRFDatasetsRealWorld.csv");
+    name2.append("GRFDatasetsTransferLearning_real.csv");
     std::ofstream file2(name2.c_str());
     for (int i = 0; i < sharedMemory->dataIdx; i++)
     {
