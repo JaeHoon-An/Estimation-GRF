@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
     QApplication a(argc, argv);
     MainWindow w;
     StartFSM();
-    int thread_id_nrt2 = generate_nrt_thread(NRTThreadTorch, NRTTorchThread, "nrt_thread2", 2, NULL);
+    int thread_id_nrt1 = generate_nrt_thread(NRTThreadTorch, NRTTorchThread, "nrt_thread1", 1, NULL);
     w.show();
     return a.exec();
 }

@@ -150,14 +150,11 @@ void LoadCell::nulling()
         tempSumedForce += GetSensoredForce();
         tempSumedWeight += GetSensoredWeight();
     }
-    std::cout << tempSumedWeight << std::endl;
     tempBiasForce = tempSumedForce / 400.0;
     tempBiasWeight = tempSumedWeight / 400.0;
 
-    std::cout << mBiasWeight << std::endl;
     mBiasForce -= tempBiasForce - (double) mOffsetRobotRawWeight * mInclineForce;
     mBiasWeight -= tempBiasWeight - (double) mOffsetRobotRawWeight * mInclineWeight;
-    std::cout << mBiasWeight << std::endl;
 }
 
 void LoadCell::flushData(int num)

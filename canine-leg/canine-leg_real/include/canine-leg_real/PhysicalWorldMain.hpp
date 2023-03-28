@@ -11,6 +11,7 @@
 #include <camel-tools/ThreadGenerator.hpp>
 #include <canine-leg_util/SharedMemory.hpp>
 #include <canine-leg_util/CANMotor.hpp>
+#include <canine-leg_util/LoadCell.hpp>
 #include <canine-leg_real/ControlPanel.hpp>
 #include <canine-leg_real/Visualizer.hpp>
 #include <canine-leg_real/Command.hpp>

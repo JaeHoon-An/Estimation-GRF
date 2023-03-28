@@ -8,7 +8,6 @@ extern pUI_COMMAND sharedCommand;
 extern pSHM sharedMemory;
 
 Command::Command()
-: mbOnlineLearning(true)
 {
 
 }
@@ -28,19 +27,23 @@ void Command::commandFunction()
         }
         case CAN_ON:
         {
+            sharedMemory->canState = CAN_INIT;
             break;
         }
         case MOTOR_ON:
         {
+            sharedMemory->canState = CAN_MOTOR_ON;
             break;
         }
         case MOTOR_OFF:
         {
+            sharedMemory->canState = CAN_MOTOR_OFF;
             break;
         }
         case HOME:
         {
             sharedMemory->controlState = STATE_HOME_READY;
+            sharedMemory->canState = CAN_SET_TORQUE;
             break;
         }
         case SETPARAMS:
@@ -50,11 +53,13 @@ void Command::commandFunction()
         case CUBIC_CONTROL:
         {
             sharedMemory->controlState = STATE_CUBIC_READY;
+            sharedMemory->canState = CAN_SET_TORQUE;
             break;
         }
         case COS_CONTROL:
         {
             sharedMemory->controlState = STATE_COS_READY;
+            sharedMemory->canState = CAN_SET_TORQUE;
             break;
         }
         case LOAD_MODEL:
@@ -64,20 +69,30 @@ void Command::commandFunction()
         }
         case ONLINE_LEARNING:
         {
-            if(mbOnlineLearning)
-            {
-                sharedMemory->torchState = TORCH_ONLINE_LEARNING;
-            }
-            else
-            {
-                sharedMemory->torchState = TORCH_ESTIMATION;
-            }
-            mbOnlineLearning = !mbOnlineLearning;
+            sharedMemory->torchState = TORCH_ONLINE_LEARNING;
             break;
         }
         case SAVE_DATA:
         {
             writeToCSVfile();
+            break;
+        }
+        case CUSTOM1:
+        {
+            sharedMemory->controlState = STATE_DATA_CUBIC_READY;
+            break;
+        }
+        case CUSTOM2:
+        {
+            break;
+        }
+        case CUSTOM3:
+        {
+            break;
+        }
+        case CUSTOM4:
+        {
+            sharedMemory->canState = CAN_SET_ZERO_TORQUE;
             break;
         }
         default:

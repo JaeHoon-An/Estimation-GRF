@@ -34,10 +34,10 @@ constexpr double LINK1_LENGTH = 0.23;
 constexpr double LINK2_LENGTH = 0.23;
 constexpr int HIP_IDX = 0;
 constexpr int KNEE_IDX = 1;
-constexpr int MOTOR_HIP_ID = 0x141;
-constexpr int MOTOR_KNEE_ID = 0x142;
-constexpr double HIP_POS_OFFSET = 0.0;
-constexpr double KNEE_POS_OFFSET = 0.0;
+constexpr int MOTOR_HIP_ID = 0x145;
+constexpr int MOTOR_KNEE_ID = 0x141;
+constexpr double HIP_POS_OFFSET = 1.1711;
+constexpr double KNEE_POS_OFFSET = -3.0827;
 
 typedef struct _UI_COMMAND_
 {
@@ -153,6 +153,7 @@ enum CAN_STATE
     CAN_MOTOR_ON,
     CAN_MOTOR_OFF,
     CAN_SET_TORQUE,
+    CAN_SET_ZERO_TORQUE,
     CAN_READ_ERROR
 };
 

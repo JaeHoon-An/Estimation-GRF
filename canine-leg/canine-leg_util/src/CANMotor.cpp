@@ -59,8 +59,8 @@ void CANMotor::CanFunction()
     case CAN_MOTOR_ON:
     {
         turnOnMotor();
-        sharedMemory->canState = CAN_NO_ACT;
         readEncoder();
+        sharedMemory->canState = CAN_NO_ACT;
         break;
     }
     case CAN_MOTOR_OFF:
@@ -71,6 +71,15 @@ void CANMotor::CanFunction()
     }
     case CAN_SET_TORQUE:
     {
+        setTorque();
+        break;
+    }
+    case CAN_SET_ZERO_TORQUE:
+    {
+        for(int i = 0 ; i < MOTOR_NUM ; i++)
+        {
+            sharedMemory->motorDesiredTorque[i] = 0.0;
+        }
         setTorque();
         break;
     }
