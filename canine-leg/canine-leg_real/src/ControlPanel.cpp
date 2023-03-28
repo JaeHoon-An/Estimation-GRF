@@ -150,6 +150,6 @@ void ControlPanel::updateNetInputs()
     sharedMemory->NETInputs[9] = mBufferVelocity[0][1];
     sharedMemory->NETInputs[10] = mBufferVelocity[20][1];
     sharedMemory->NETInputs[11] = mBufferVelocity[40][1];
-    sharedMemory->NETInputs[12] = sharedMemory->motorTorque[0];
-    sharedMemory->NETInputs[13] = sharedMemory->motorTorque[1];
+    sharedMemory->NETInputs[12] = sharedMemory->motorDesiredTorque[0];
+    sharedMemory->NETInputs[13] = sharedMemory->motorDesiredTorque[1];
 }
