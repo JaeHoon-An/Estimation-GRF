@@ -119,6 +119,7 @@ void ControlPanel::clearBuffer()
             mBufferVelocity[i][j] = 0.0;
         }
     }
+    mGRFBuffer.setZero();
 }
 
 void ControlPanel::updateBuffer()
@@ -134,22 +135,39 @@ void ControlPanel::updateBuffer()
     mBufferPosition[0][1] = sharedMemory->motorPosition[1];
     mBufferVelocity[0][0] = sharedMemory->motorVelocity[0];
     mBufferVelocity[0][1] = sharedMemory->motorVelocity[1];
+
+    for (int i = 9; i > 0; i--)
+    {
+        mGRFBuffer(i, 0) = mGRFBuffer(i - 1, 0);
+    }
+    mGRFBuffer(0, 0) = sharedMemory->estimatedGRF;
 }
 
 void ControlPanel::updateNetInputs()
 {
-    sharedMemory->NETInputs[0] = mBufferPosition[0][0];
-    sharedMemory->NETInputs[1] = mBufferPosition[20][0];
-    sharedMemory->NETInputs[2] = mBufferPosition[40][0];
-    sharedMemory->NETInputs[3] = mBufferPosition[0][1];
-    sharedMemory->NETInputs[4] = mBufferPosition[20][1];
-    sharedMemory->NETInputs[5] = mBufferPosition[40][1];
-    sharedMemory->NETInputs[6] = mBufferVelocity[0][0];
-    sharedMemory->NETInputs[7] = mBufferVelocity[20][0];
-    sharedMemory->NETInputs[8] = mBufferVelocity[40][0];
-    sharedMemory->NETInputs[9] = mBufferVelocity[0][1];
-    sharedMemory->NETInputs[10] = mBufferVelocity[20][1];
-    sharedMemory->NETInputs[11] = mBufferVelocity[40][1];
-    sharedMemory->NETInputs[12] = sharedMemory->motorDesiredTorque[0];
-    sharedMemory->NETInputs[13] = sharedMemory->motorDesiredTorque[1];
+    sharedMemory->GRFNETInputs[0] = mBufferPosition[0][0];
+    sharedMemory->GRFNETInputs[1] = mBufferPosition[20][0];
+    sharedMemory->GRFNETInputs[2] = mBufferPosition[40][0];
+    sharedMemory->GRFNETInputs[3] = mBufferPosition[0][1];
+    sharedMemory->GRFNETInputs[4] = mBufferPosition[20][1];
+    sharedMemory->GRFNETInputs[5] = mBufferPosition[40][1];
+    sharedMemory->GRFNETInputs[6] = mBufferVelocity[0][0];
+    sharedMemory->GRFNETInputs[7] = mBufferVelocity[20][0];
+    sharedMemory->GRFNETInputs[8] = mBufferVelocity[40][0];
+    sharedMemory->GRFNETInputs[9] = mBufferVelocity[0][1];
+    sharedMemory->GRFNETInputs[10] = mBufferVelocity[20][1];
+    sharedMemory->GRFNETInputs[11] = mBufferVelocity[40][1];
+    sharedMemory->GRFNETInputs[12] = sharedMemory->motorDesiredTorque[0];
+    sharedMemory->GRFNETInputs[13] = sharedMemory->motorDesiredTorque[1];
+
+    sharedMemory->Sim2RealNETInputs[0] = mGRFBuffer(0, 0);
+    sharedMemory->Sim2RealNETInputs[1] = mGRFBuffer(1, 0);
+    sharedMemory->Sim2RealNETInputs[2] = mGRFBuffer(2, 0);
+    sharedMemory->Sim2RealNETInputs[3] = mGRFBuffer(3, 0);
+    sharedMemory->Sim2RealNETInputs[4] = mGRFBuffer(4, 0);
+    sharedMemory->Sim2RealNETInputs[5] = mGRFBuffer(5, 0);
+    sharedMemory->Sim2RealNETInputs[6] = mGRFBuffer(6, 0);
+    sharedMemory->Sim2RealNETInputs[7] = mGRFBuffer(7, 0);
+    sharedMemory->Sim2RealNETInputs[8] = mGRFBuffer(8, 0);
+    sharedMemory->Sim2RealNETInputs[9] = mGRFBuffer(9, 0);
 }

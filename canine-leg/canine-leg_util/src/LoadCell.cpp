@@ -155,6 +155,9 @@ void LoadCell::nulling()
 
     mBiasForce -= tempBiasForce - (double) mOffsetRobotRawWeight * mInclineForce;
     mBiasWeight -= tempBiasWeight - (double) mOffsetRobotRawWeight * mInclineWeight;
+    mBiasForce = -3.0371;
+    std::cout<<"[LOADCELL] force bias : "<<mBiasForce<<std::endl;
+    std::cout<<"[LOADCELL] weight bias : "<<mBiasWeight<<std::endl;
 }
 
 void LoadCell::flushData(int num)

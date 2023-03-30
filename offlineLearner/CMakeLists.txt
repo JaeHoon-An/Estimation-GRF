@@ -19,3 +19,13 @@ target_link_libraries(regression
         pthread
         Qt5::Widgets)
 set_property(TARGET regression PROPERTY CXX_STANDARD 14)
+
+add_executable(transferLearning
+        main.cpp
+        TransferLearningUI/mainwindow.cpp
+        TransferLearningUI/qcustomplot.cpp)
+target_link_libraries(transferLearning
+        "${TORCH_LIBRARIES}"
+        pthread
+        Qt5::Widgets)
+set_property(TARGET transferLearning PROPERTY CXX_STANDARD 14)

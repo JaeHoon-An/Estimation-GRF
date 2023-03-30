@@ -12,8 +12,11 @@ constexpr int MAX_CUSTOM_DATA = 20;
 constexpr int MOTOR_NUM = 2;
 constexpr int NET_INPUT_BUFFER_SIZE = 41;
 constexpr int GRF_BUFFER_SIZE = 3;
-constexpr int NET_INPUT_SIZE = 14;
-constexpr int NET_OUTPUT_SIZE = 1;
+
+constexpr int GRF_NET_INPUT_SIZE = 14;
+constexpr int GRF_NET_OUTPUT_SIZE = 1;
+constexpr int SIM2REAL_NET_INPUT_SIZE = 10;
+constexpr int SIM2REAL_NET_OUTPUT_SIZE = 1;
 
 constexpr double DEFAULT_Kp = 70.0;
 constexpr double DEFAULT_Kd = 2.5;
@@ -36,8 +39,8 @@ constexpr int HIP_IDX = 0;
 constexpr int KNEE_IDX = 1;
 constexpr int MOTOR_HIP_ID = 0x145;
 constexpr int MOTOR_KNEE_ID = 0x141;
-constexpr double HIP_POS_OFFSET = 1.1711;
-constexpr double KNEE_POS_OFFSET = -3.0827;
+constexpr double HIP_POS_OFFSET = 1.1565;
+constexpr double KNEE_POS_OFFSET = -2.9859;
 
 typedef struct _UI_COMMAND_
 {
@@ -65,6 +68,7 @@ typedef struct _SHM_
     double hipVerticalVelocity;
     double measuredGRF;
     double estimatedGRF;
+    double sim2realGRF;
     double motorPosition[MOTOR_NUM];
     double motorVelocity[MOTOR_NUM];
     double motorTorque[MOTOR_NUM];
@@ -82,13 +86,14 @@ typedef struct _SHM_
     double cosAmplitude;
     double cosFrequency;
     double learningRate;
-    double NETInputs[NET_INPUT_SIZE];
+    double GRFNETInputs[GRF_NET_INPUT_SIZE];
+    double Sim2RealNETInputs[SIM2REAL_NET_INPUT_SIZE];
 
     double motionTableOffset[27];
     double motionTableAmplitude[27];
     double motionTableFrequency[27];
-    double dataForTransferLearning[200000][11];
-    double dataForSupervisedLearning[200000][15];
+    double dataForTransferLearning[2000000][11];
+    double dataForSupervisedLearning[2000000][15];
     std::string* modelName;
 } SHM, * pSHM;
 

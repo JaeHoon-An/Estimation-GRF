@@ -212,8 +212,10 @@ void MainWindow::graphUpdate()
     ui->QCP_STATES_TAU_KNEE->graph(1)->addData(sharedMemory->localTime, sharedMemory->motorTorque[KNEE_IDX]);
 
     ui->QCP_GRF_GRF->graph(0)->addData(sharedMemory->localTime, sharedMemory->measuredGRF);
-    ui->QCP_GRF_GRF->graph(1)->addData(sharedMemory->localTime, sharedMemory->estimatedGRF);
-    ui->QCP_GRF_ERROR->graph(0)->addData(sharedMemory->localTime, abs(sharedMemory->measuredGRF - sharedMemory->estimatedGRF));
+//    ui->QCP_GRF_GRF->graph(1)->addData(sharedMemory->localTime, sharedMemory->estimatedGRF);
+//    ui->QCP_GRF_ERROR->graph(0)->addData(sharedMemory->localTime, abs(sharedMemory->measuredGRF - sharedMemory->estimatedGRF));
+    ui->QCP_GRF_GRF->graph(1)->addData(sharedMemory->localTime, sharedMemory->sim2realGRF);
+    ui->QCP_GRF_ERROR->graph(0)->addData(sharedMemory->localTime, abs(sharedMemory->measuredGRF - sharedMemory->sim2realGRF));
 
     ui->QCP_STATES_POS_HIP->xAxis->setRange(sharedMemory->localTime - graphOffset, sharedMemory->localTime + graphOffset);
     ui->QCP_STATES_POS_KNEE->xAxis->setRange(sharedMemory->localTime - graphOffset, sharedMemory->localTime + graphOffset);

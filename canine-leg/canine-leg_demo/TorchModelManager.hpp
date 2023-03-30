@@ -24,12 +24,12 @@ private:
         }
     };
 
-    struct Net : torch::nn::Module
+    struct GRFNet : torch::nn::Module
     {
         torch::nn::Linear fc1{ nullptr }, fc2{ nullptr }, fc3{ nullptr }, fc4{ nullptr }, fc5{ nullptr }, fc6{ nullptr }, fc7{ nullptr }, fc8{ nullptr }, fc9{ nullptr };
         swish activationSwish;
 
-        Net(int in_dim, int out_dim)
+        GRFNet(int in_dim, int out_dim)
         {
             fc1 = register_module("fc1", torch::nn::Linear(in_dim, 32));
             fc2 = register_module("fc2", torch::nn::Linear(32, 32));
@@ -58,17 +58,49 @@ private:
         }
     };
 
+    struct Sim2RealNet : torch::nn::Module
+    {
+        torch::nn::Linear fc1{ nullptr }, fc2{ nullptr }, fc3{ nullptr }, fc4{ nullptr }, fc5{ nullptr }, fc6{ nullptr };
+        swish activationSwish;
+
+        Sim2RealNet(int in_dim, int out_dim)
+        {
+            fc1 = register_module("fc1", torch::nn::Linear(in_dim, 16));
+            fc2 = register_module("fc2", torch::nn::Linear(16, 16));
+            fc3 = register_module("fc3", torch::nn::Linear(16, 16));
+            fc4 = register_module("fc4", torch::nn::Linear(16, 16));
+            fc5 = register_module("fc5", torch::nn::Linear(16, 16));
+            fc6 = register_module("fc6", torch::nn::Linear(16, out_dim));
+        }
+
+        torch::Tensor forward(torch::Tensor x)
+        {
+            x = fc1->forward(x);
+            x = fc2->forward(activationSwish.forward(x));
+            x = fc3->forward(activationSwish.forward(x));
+            x = fc4->forward(activationSwish.forward(x));
+            x = fc5->forward(activationSwish.forward(x));
+            x = fc6->forward(activationSwish.forward(x));
+            return x;
+        }
+    };
+
 private:
     void loadModel();
     void estimation();
     void onlineLearning();
 
 private:
-    std::shared_ptr<Net> mANN;
-    torch::Tensor mInputs;
-    torch::Tensor mOutputs;
-    torch::Tensor mTargets;
-    torch::Tensor mLoss;
+    std::shared_ptr<GRFNet> mFCN_GRF;
+    std::shared_ptr<Sim2RealNet> mFCN_Sim2Realnet;
+    torch::Tensor mGRFNetInputs;
+    torch::Tensor mGRFNetOutputs;
+    torch::Tensor mGRFNetTargets;
+    torch::Tensor mGRFNetLoss;
+    torch::Tensor mSim2RealNetInputs;
+    torch::Tensor mSim2RealNetOutputs;
+    torch::Tensor mSim2RealNetTargets;
+    torch::Tensor mSim2RealNetLoss;
 };
 
 
