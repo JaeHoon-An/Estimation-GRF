@@ -221,6 +221,17 @@ void clearSharedMemory()
     sharedMemory->motionTableFrequency[idx*9 + 7] = 0.75;
     sharedMemory->motionTableFrequency[idx*9 + 8] = 1.00;
 
+    idx = 0;
+    sharedMemory->motionTableOffset[idx*9]     = 0.26;
+    sharedMemory->motionTableOffset[idx*9 + 1] = 0.32;
+    sharedMemory->motionTableOffset[idx*9 + 2] = 0.28;
+    sharedMemory->motionTableAmplitude[idx*9]     = 0.015;
+    sharedMemory->motionTableAmplitude[idx*9 + 1] = 0.03;
+    sharedMemory->motionTableAmplitude[idx*9 + 2] = 0.01;
+    sharedMemory->motionTableFrequency[idx*9]     = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 1] = 0.75;
+    sharedMemory->motionTableFrequency[idx*9 + 2] = 1.00;
+
 }
 
 void StartFSM()

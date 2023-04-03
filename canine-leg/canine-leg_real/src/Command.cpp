@@ -37,6 +37,7 @@ void Command::commandFunction()
         }
         case MOTOR_OFF:
         {
+            sharedMemory->controlState = STATE_CONTROL_STOP;
             sharedMemory->canState = CAN_MOTOR_OFF;
             break;
         }
@@ -125,16 +126,16 @@ void Command::writeToCSVfile()
 //    }
 
     std::string name2;
-    name2.append(DATASET_DIR);
-    name2.append("Result_model3_real.csv");
+    name2.append(RESULT_DIR);
+    name2.append("Result_model1_sim2real.csv");
 //    name2.append("GRFDatasetsTransferLearning_real_6_cos.csv");
     std::ofstream file2(name2.c_str());
     for (int i = 0; i < sharedMemory->dataIdx; i++)
     {
-        for (int j = 0; j < 11; j++)
+        for (int j = 0; j < 3; j++)
         {
-            std::string str = std::to_string(sharedMemory->dataForTransferLearning[i][j]);
-            if (j + 1 == 11)
+            std::string str = std::to_string(sharedMemory->dataForResults[i][j]);
+            if (j + 1 == 3)
             {
                 file2 << str;
             }

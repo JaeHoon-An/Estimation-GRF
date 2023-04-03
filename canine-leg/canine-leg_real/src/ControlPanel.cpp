@@ -94,7 +94,7 @@ void ControlPanel::ControllerFunction()
         if (sharedMemory->dataCollectStopFlag)
         {
             sharedMemory->controlState = STATE_DATA_CUBIC_READY;
-            if (mMotionTableIdx == 27)
+            if (mMotionTableIdx == 9)
             {
                 std::cout << "[SYSTEM] Collecting data is end. " << std::endl;
                 sharedMemory->controlState = STATE_HOME_READY;

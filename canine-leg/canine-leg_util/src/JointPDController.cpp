@@ -32,6 +32,8 @@ void JointPDController::DoCubicControl()
     solveIK();
     computeControlInput();
     SetControlInput();
+    updateBuffer();
+    collectData();
 }
 
 void JointPDController::InitCosTrajectory()
@@ -76,24 +78,26 @@ void JointPDController::collectData()
     }
     else if(mbCollectFlag == true)
     {
-        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][0] = mGRFBuffer(0, 0);
-        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][1] = mGRFBuffer(1, 0);
-        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][2] = mGRFBuffer(2, 0);
-        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][3] = mGRFBuffer(3, 0);
-        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][4] = mGRFBuffer(4, 0);
-        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][5] = mGRFBuffer(5, 0);
-        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][6] = mGRFBuffer(6, 0);
-        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][7] = mGRFBuffer(7, 0);
-        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][8] = mGRFBuffer(8, 0);
-        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][9] = mGRFBuffer(9, 0);
-        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][10] = sharedMemory->measuredGRF;
-
-        for(int i = 0 ; i < GRF_NET_INPUT_SIZE ; i++)
-        {
-            sharedMemory->dataForSupervisedLearning[sharedMemory->dataIdx][i] = sharedMemory->GRFNETInputs[i];
-        }
-        sharedMemory->dataForSupervisedLearning[sharedMemory->dataIdx][14] = sharedMemory->measuredGRF;
-
+//        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][0] = mGRFBuffer(0, 0);
+//        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][1] = mGRFBuffer(1, 0);
+//        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][2] = mGRFBuffer(2, 0);
+//        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][3] = mGRFBuffer(3, 0);
+//        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][4] = mGRFBuffer(4, 0);
+//        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][5] = mGRFBuffer(5, 0);
+//        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][6] = mGRFBuffer(6, 0);
+//        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][7] = mGRFBuffer(7, 0);
+//        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][8] = mGRFBuffer(8, 0);
+//        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][9] = mGRFBuffer(9, 0);
+//        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][10] = sharedMemory->measuredGRF;
+//
+//        for(int i = 0 ; i < GRF_NET_INPUT_SIZE ; i++)
+//        {
+//            sharedMemory->dataForSupervisedLearning[sharedMemory->dataIdx][i] = sharedMemory->GRFNETInputs[i];
+//        }
+//        sharedMemory->dataForSupervisedLearning[sharedMemory->dataIdx][14] = sharedMemory->measuredGRF;
+        sharedMemory->dataForResults[sharedMemory->dataIdx][0] = sharedMemory->estimatedGRF;
+        sharedMemory->dataForResults[sharedMemory->dataIdx][1] = sharedMemory->sim2realGRF;
+        sharedMemory->dataForResults[sharedMemory->dataIdx][2] = sharedMemory->measuredGRF;
         sharedMemory->dataIdx += 1;
     }
 }
