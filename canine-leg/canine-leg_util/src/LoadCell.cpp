@@ -9,16 +9,15 @@ LoadCell::LoadCell()
     mbIsNegativeValue = false;
     mReadedData = 0;
     mIdx = 0;
+    mGravity = 9.81;
     mOffsetRobotRawWeight = 328300;
-    mInclineWeight = 0.00001081112031;
-    mBiasWeight = -288.7621365;
-    mInclineForce = mInclineWeight * 9.81 ;
-    mBiasForce = -2.832756559;
+    mInclineForce = 0.00004892611677;
+    mBiasForce = -2.784656315;
     mSensoredWeight = 0;
     mSensoredForce = 0;
     initUSBComm();
-    flushData(10);
-    nulling();
+    flushData(1000);
+//    nulling();
 }
 
 int LoadCell::GetRawData() const
@@ -72,8 +71,8 @@ void LoadCell::ReadData()
     {
         mReadedData = -1.0 * mReadedData;
     }
-    mSensoredWeight = mReadedData * mInclineWeight + mBiasWeight;
     mSensoredForce = mReadedData * mInclineForce + mBiasForce;
+    mSensoredWeight = mSensoredForce/mGravity;
 
     // reset
     mIdx = 0;
@@ -83,7 +82,7 @@ void LoadCell::ReadData()
 
 void LoadCell::initUSBComm()
 {
-    mSerialPort = open("/dev/ttyUSB0", O_RDWR);
+    mSerialPort = open("/dev/ttyACM0", O_RDWR);
     if (tcgetattr(mSerialPort, &mTty) != 0)
     {
         printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
@@ -154,10 +153,7 @@ void LoadCell::nulling()
     tempBiasWeight = tempSumedWeight / 400.0;
 
     mBiasForce -= tempBiasForce - (double) mOffsetRobotRawWeight * mInclineForce;
-    mBiasWeight -= tempBiasWeight - (double) mOffsetRobotRawWeight * mInclineWeight;
-    mBiasForce = -3.0371;
     std::cout<<"[LOADCELL] force bias : "<<mBiasForce<<std::endl;
-    std::cout<<"[LOADCELL] weight bias : "<<mBiasWeight<<std::endl;
 }
 
 void LoadCell::flushData(int num)
@@ -165,5 +161,6 @@ void LoadCell::flushData(int num)
     for (int i = 0; i < num; i++)
     {
         ReadData();
+        usleep(650);
     }
 }

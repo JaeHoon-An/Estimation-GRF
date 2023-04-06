@@ -75,5 +75,7 @@ add_executable(GRFtest canine-leg_demo/GRFTest.cpp)
 target_link_libraries(GRFtest
         canine-leg_util
         camel-tools-filter
+        camel-tools-thread
+        pthread
         )
 
