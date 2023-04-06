@@ -50,6 +50,7 @@ void* NRTLoadCellThread(void* arg)
     {
         loadCell.ReadData();
         sharedMemory->measuredGRF = loadCell.GetSensoredForce();
+        usleep(650);
     }
 }
 
