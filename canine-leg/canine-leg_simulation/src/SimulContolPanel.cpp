@@ -43,6 +43,28 @@ void SimulControlPanel::ControllerFunction()
     }
     case STATE_CUBIC_READY:
     {
+        PDcontrol.InitCubicTrajectory();
+        sharedMemory->controlState = STATE_CUBIC_CONTROL;
+        break;
+    }
+    case STATE_CUBIC_CONTROL:
+    {
+        PDcontrol.DoCubicControl();
+        break;
+    }
+    case STATE_COS_READY:
+    {
+        PDcontrol.InitCosTrajectory();
+        sharedMemory->controlState = STATE_COS_CONTROL;
+        break;
+    }
+    case STATE_COS_CONTROL:
+    {
+        PDcontrol.DoCosControl();
+        break;
+    }
+    case STATE_DATA_CUBIC_READY:
+    {
         sharedMemory->cubicGoalHeight = sharedMemory->motionTableOffset[mMotionTableIdx];
         sharedMemory->cosAmplitude = sharedMemory->motionTableAmplitude[mMotionTableIdx];
         sharedMemory->cosFrequency = sharedMemory->motionTableFrequency[mMotionTableIdx];
@@ -51,32 +73,32 @@ void SimulControlPanel::ControllerFunction()
         PDcontrol.InitCubicTrajectory();
         mReferenceTime = sharedMemory->localTime;
         sharedMemory->dataCollectStopFlag = false;
-        sharedMemory->controlState = STATE_CUBIC_CONTROL;
+        sharedMemory->controlState = STATE_DATA_CUBIC_CONTROL;
         break;
     }
-    case STATE_CUBIC_CONTROL:
+    case STATE_DATA_CUBIC_CONTROL:
     {
         PDcontrol.DoCubicControl();
-        if(sharedMemory->localTime >= mReferenceTime + 2.0)
+        if (sharedMemory->localTime >= mReferenceTime + 2.0)
         {
-            sharedMemory->controlState = STATE_COS_READY;
+            sharedMemory->controlState = STATE_DATA_COS_READY;
         }
         break;
     }
-    case STATE_COS_READY:
+    case STATE_DATA_COS_READY:
     {
         PDcontrol.InitCosTrajectory();
         mReferenceTime = sharedMemory->localTime;
-        sharedMemory->controlState = STATE_COS_CONTROL;
+        sharedMemory->controlState = STATE_DATA_COS_CONTROL;
         break;
     }
-    case STATE_COS_CONTROL:
+    case STATE_DATA_COS_CONTROL:
     {
         PDcontrol.DoCosControl();
-        if(sharedMemory->dataCollectStopFlag)
+        if (sharedMemory->dataCollectStopFlag)
         {
-            sharedMemory->controlState = STATE_CUBIC_READY;
-            if(mMotionTableIdx == 27)
+            sharedMemory->controlState = STATE_DATA_CUBIC_READY;
+            if (mMotionTableIdx == 9)
             {
                 std::cout << "[SYSTEM] Collecting data is end. " << std::endl;
                 sharedMemory->controlState = STATE_HOME_READY;
@@ -162,18 +184,18 @@ void SimulControlPanel::updateBuffer()
 
 void SimulControlPanel::updateNetInputs()
 {
-    sharedMemory->NETInputs[0] = mBufferPosition[0][0];
-    sharedMemory->NETInputs[1] = mBufferPosition[20][0];
-    sharedMemory->NETInputs[2] = mBufferPosition[40][0];
-    sharedMemory->NETInputs[3] = mBufferPosition[0][1];
-    sharedMemory->NETInputs[4] = mBufferPosition[20][1];
-    sharedMemory->NETInputs[5] = mBufferPosition[40][1];
-    sharedMemory->NETInputs[6] = mBufferVelocity[0][0];
-    sharedMemory->NETInputs[7] = mBufferVelocity[20][0];
-    sharedMemory->NETInputs[8] = mBufferVelocity[40][0];
-    sharedMemory->NETInputs[9] = mBufferVelocity[0][1];
-    sharedMemory->NETInputs[10] = mBufferVelocity[20][1];
-    sharedMemory->NETInputs[11] = mBufferVelocity[40][1];
-    sharedMemory->NETInputs[12] = sharedMemory->motorTorque[0];
-    sharedMemory->NETInputs[13] = sharedMemory->motorTorque[1];
+    sharedMemory->GRFNETInputs[0] = mBufferPosition[0][0];
+    sharedMemory->GRFNETInputs[1] = mBufferPosition[20][0];
+    sharedMemory->GRFNETInputs[2] = mBufferPosition[40][0];
+    sharedMemory->GRFNETInputs[3] = mBufferPosition[0][1];
+    sharedMemory->GRFNETInputs[4] = mBufferPosition[20][1];
+    sharedMemory->GRFNETInputs[5] = mBufferPosition[40][1];
+    sharedMemory->GRFNETInputs[6] = mBufferVelocity[0][0];
+    sharedMemory->GRFNETInputs[7] = mBufferVelocity[20][0];
+    sharedMemory->GRFNETInputs[8] = mBufferVelocity[40][0];
+    sharedMemory->GRFNETInputs[9] = mBufferVelocity[0][1];
+    sharedMemory->GRFNETInputs[10] = mBufferVelocity[20][1];
+    sharedMemory->GRFNETInputs[11] = mBufferVelocity[40][1];
+    sharedMemory->GRFNETInputs[12] = sharedMemory->motorTorque[0];
+    sharedMemory->GRFNETInputs[13] = sharedMemory->motorTorque[1];
 }
