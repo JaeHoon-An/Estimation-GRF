@@ -39,8 +39,9 @@ constexpr int HIP_IDX = 0;
 constexpr int KNEE_IDX = 1;
 constexpr int MOTOR_HIP_ID = 0x145;
 constexpr int MOTOR_KNEE_ID = 0x141;
-constexpr double HIP_POS_OFFSET = 1.1565;
-constexpr double KNEE_POS_OFFSET = -2.9859;
+
+constexpr double HIP_POS_OFFSET = 1.1882;
+constexpr double KNEE_POS_OFFSET = -3.260096;
 
 typedef struct _UI_COMMAND_
 {
