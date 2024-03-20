@@ -161,6 +161,5 @@ void LoadCell::flushData(int num)
     for (int i = 0; i < num; i++)
     {
         ReadData();
-        usleep(650);
     }
 }

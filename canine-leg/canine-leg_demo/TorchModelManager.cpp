@@ -70,7 +70,7 @@ void TorchModelManager::loadModel()
 
     std::string modelPathSim2Real;
     modelPathSim2Real.append(MODEL_DIR);
-    modelPathSim2Real.append("Model_Sim2Real_5_cos_1.pt");
+    modelPathSim2Real.append("Model_Sim2Real_v2_2.pt");
     std::ifstream ifs2(modelPathSim2Real);
     try
     {

@@ -4,17 +4,20 @@
 
 #include <canine-leg_real/PhysicalWorldMain.hpp>
 
+
 pthread_t RTThreadController;
 pthread_t NRTThreadCommandAndVisual;
 pthread_t NRTThreadCAN;
-pthread_t NRTThreadLoadCell;
 
+pthread_t NRTThreadLoadCell;
 pUI_COMMAND sharedCommand;
+
 pSHM sharedMemory;
+LPF lpf(0.001, 50);
 
 raisim::World world;
 raisim::RaisimServer server(&world);
-raisim::ArticulatedSystem* robot = world.addArticulatedSystem(std::string(URDF_RSC_DIR) + "/canine_leg_left/canine_leg_left_V2.urdf");
+raisim::ArticulatedSystem* robot = world.addArticulatedSystem(std::string(URDF_RSC_DIR) + "/canine_leg_left_v4/canine_leg_left_v4.urdf");
 
 Command userCommand;
 Visualizer visualizer(&world, robot, &server);
@@ -39,18 +42,23 @@ void* NRTCANThread(void* arg)
     while (true)
     {
         canMotor.CanFunction();
-        usleep(10);
     }
 }
 
 void* NRTLoadCellThread(void* arg)
 {
     std::cout << "entered #nrt_Load_cell_thread" << std::endl;
+    for(int i = 0; i<100 ; i++)
+    {
+        loadCell.ReadData();
+    }
+
     while (true)
     {
         loadCell.ReadData();
         sharedMemory->measuredGRF = loadCell.GetSensoredForce();
-        usleep(650);
+//        sharedMemory->rawGRF = loadCell.GetSensoredForce();
+        usleep(450);
     }
 }
 
@@ -69,9 +77,8 @@ void* RTControllerThread(void* arg)
     {
         clock_gettime(CLOCK_REALTIME, &TIME_NOW); //현재 시간 구함
         timespec_add_us(&TIME_NEXT, PERIOD_US);   //목표 시간 구함
-
+//        sharedMemory->measuredGRF = lpf.GetFilteredVar(sharedMemory->rawGRF);
         controlPanel.ControllerFunction();
-
         clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &TIME_NEXT, NULL); //목표시간까지 기다림 (현재시간이 이미 오바되어 있으면 바로 넘어갈 듯)
         if (timespec_cmp(&TIME_NOW, &TIME_NEXT) > 0)
         {
@@ -98,6 +105,7 @@ void clearSharedMemory()
     sharedMemory->desiredHipVerticalVelocity = 0;
     sharedMemory->hipVerticalPosition = 0;
     sharedMemory->hipVerticalVelocity = 0;
+    sharedMemory->rawGRF = 0;
     sharedMemory->measuredGRF = 0;
     sharedMemory->estimatedGRF = 0;
 
@@ -134,6 +142,11 @@ void clearSharedMemory()
         {
             sharedMemory->dataForSupervisedLearning[i][j] = 0.0;
         }
+
+        for(int j = 0 ; j < 9 ; j++)
+        {
+            sharedMemory->dataLogger[i][j] = 0.0;
+        }
     }
     int idx = 0;
     sharedMemory->motionTableOffset[idx*9]     = 0.25;
@@ -145,15 +158,15 @@ void clearSharedMemory()
     sharedMemory->motionTableOffset[idx*9 + 6] = 0.25;
     sharedMemory->motionTableOffset[idx*9 + 7] = 0.25;
     sharedMemory->motionTableOffset[idx*9 + 8] = 0.25;
-    sharedMemory->motionTableAmplitude[idx*9]     = 0.01;
-    sharedMemory->motionTableAmplitude[idx*9 + 1] = 0.01;
-    sharedMemory->motionTableAmplitude[idx*9 + 2] = 0.01;
-    sharedMemory->motionTableAmplitude[idx*9 + 3] = 0.015;
-    sharedMemory->motionTableAmplitude[idx*9 + 4] = 0.015;
-    sharedMemory->motionTableAmplitude[idx*9 + 5] = 0.015;
-    sharedMemory->motionTableAmplitude[idx*9 + 6] = 0.02;
-    sharedMemory->motionTableAmplitude[idx*9 + 7] = 0.02;
-    sharedMemory->motionTableAmplitude[idx*9 + 8] = 0.02;
+    sharedMemory->motionTableAmplitude[idx*9]     = 0.02;
+    sharedMemory->motionTableAmplitude[idx*9 + 1] = 0.02;
+    sharedMemory->motionTableAmplitude[idx*9 + 2] = 0.02;
+    sharedMemory->motionTableAmplitude[idx*9 + 3] = 0.025;
+    sharedMemory->motionTableAmplitude[idx*9 + 4] = 0.025;
+    sharedMemory->motionTableAmplitude[idx*9 + 5] = 0.025;
+    sharedMemory->motionTableAmplitude[idx*9 + 6] = 0.03;
+    sharedMemory->motionTableAmplitude[idx*9 + 7] = 0.03;
+    sharedMemory->motionTableAmplitude[idx*9 + 8] = 0.03;
     sharedMemory->motionTableFrequency[idx*9]     = 0.50;
     sharedMemory->motionTableFrequency[idx*9 + 1] = 0.75;
     sharedMemory->motionTableFrequency[idx*9 + 2] = 1.00;
@@ -177,12 +190,12 @@ void clearSharedMemory()
     sharedMemory->motionTableAmplitude[idx*9]     = 0.02;
     sharedMemory->motionTableAmplitude[idx*9 + 1] = 0.02;
     sharedMemory->motionTableAmplitude[idx*9 + 2] = 0.02;
-    sharedMemory->motionTableAmplitude[idx*9 + 3] = 0.025;
-    sharedMemory->motionTableAmplitude[idx*9 + 4] = 0.025;
-    sharedMemory->motionTableAmplitude[idx*9 + 5] = 0.025;
-    sharedMemory->motionTableAmplitude[idx*9 + 6] = 0.03;
-    sharedMemory->motionTableAmplitude[idx*9 + 7] = 0.03;
-    sharedMemory->motionTableAmplitude[idx*9 + 8] = 0.03;
+    sharedMemory->motionTableAmplitude[idx*9 + 3] = 0.03;
+    sharedMemory->motionTableAmplitude[idx*9 + 4] = 0.03;
+    sharedMemory->motionTableAmplitude[idx*9 + 5] = 0.03;
+    sharedMemory->motionTableAmplitude[idx*9 + 6] = 0.04;
+    sharedMemory->motionTableAmplitude[idx*9 + 7] = 0.04;
+    sharedMemory->motionTableAmplitude[idx*9 + 8] = 0.04;
     sharedMemory->motionTableFrequency[idx*9]     = 0.50;
     sharedMemory->motionTableFrequency[idx*9 + 1] = 0.75;
     sharedMemory->motionTableFrequency[idx*9 + 2] = 1.00;
@@ -206,12 +219,12 @@ void clearSharedMemory()
     sharedMemory->motionTableAmplitude[idx*9]     = 0.030;
     sharedMemory->motionTableAmplitude[idx*9 + 1] = 0.030;
     sharedMemory->motionTableAmplitude[idx*9 + 2] = 0.030;
-    sharedMemory->motionTableAmplitude[idx*9 + 3] = 0.040;
-    sharedMemory->motionTableAmplitude[idx*9 + 4] = 0.040;
-    sharedMemory->motionTableAmplitude[idx*9 + 5] = 0.040;
-    sharedMemory->motionTableAmplitude[idx*9 + 6] = 0.050;
-    sharedMemory->motionTableAmplitude[idx*9 + 7] = 0.050;
-    sharedMemory->motionTableAmplitude[idx*9 + 8] = 0.050;
+    sharedMemory->motionTableAmplitude[idx*9 + 3] = 0.035;
+    sharedMemory->motionTableAmplitude[idx*9 + 4] = 0.035;
+    sharedMemory->motionTableAmplitude[idx*9 + 5] = 0.035;
+    sharedMemory->motionTableAmplitude[idx*9 + 6] = 0.04;
+    sharedMemory->motionTableAmplitude[idx*9 + 7] = 0.04;
+    sharedMemory->motionTableAmplitude[idx*9 + 8] = 0.04;
     sharedMemory->motionTableFrequency[idx*9]     = 0.50;
     sharedMemory->motionTableFrequency[idx*9 + 1] = 0.75;
     sharedMemory->motionTableFrequency[idx*9 + 2] = 1.00;
@@ -223,15 +236,35 @@ void clearSharedMemory()
     sharedMemory->motionTableFrequency[idx*9 + 8] = 1.00;
 
     idx = 0;
-    sharedMemory->motionTableOffset[idx*9]     = 0.26;
-    sharedMemory->motionTableOffset[idx*9 + 1] = 0.32;
-    sharedMemory->motionTableOffset[idx*9 + 2] = 0.28;
-    sharedMemory->motionTableAmplitude[idx*9]     = 0.015;
-    sharedMemory->motionTableAmplitude[idx*9 + 1] = 0.03;
-    sharedMemory->motionTableAmplitude[idx*9 + 2] = 0.01;
+    sharedMemory->motionTableOffset[idx*9]     = 0.25;
+    sharedMemory->motionTableOffset[idx*9 + 1] = 0.25;
+    sharedMemory->motionTableOffset[idx*9 + 2] = 0.25;
+    sharedMemory->motionTableAmplitude[idx*9]     = 0.03;
+    sharedMemory->motionTableAmplitude[idx*9 + 1] = 0.025;
+    sharedMemory->motionTableAmplitude[idx*9 + 2] = 0.02;
     sharedMemory->motionTableFrequency[idx*9]     = 0.50;
     sharedMemory->motionTableFrequency[idx*9 + 1] = 0.75;
     sharedMemory->motionTableFrequency[idx*9 + 2] = 1.00;
+
+    sharedMemory->motionTableOffset[idx*9 + 3] = 0.30;
+    sharedMemory->motionTableOffset[idx*9 + 4] = 0.30;
+    sharedMemory->motionTableOffset[idx*9 + 5] = 0.30;
+    sharedMemory->motionTableAmplitude[idx*9 + 3] = 0.05;
+    sharedMemory->motionTableAmplitude[idx*9 + 4] = 0.04;
+    sharedMemory->motionTableAmplitude[idx*9 + 5] = 0.03;
+    sharedMemory->motionTableFrequency[idx*9 + 3] = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 4] = 0.75;
+    sharedMemory->motionTableFrequency[idx*9 + 5] = 1.00;
+
+    sharedMemory->motionTableOffset[idx*9 + 6] = 0.27;
+    sharedMemory->motionTableOffset[idx*9 + 7] = 0.27;
+    sharedMemory->motionTableOffset[idx*9 + 8] = 0.27;
+    sharedMemory->motionTableAmplitude[idx*9 + 6] = 0.04;
+    sharedMemory->motionTableAmplitude[idx*9 + 7] = 0.03;
+    sharedMemory->motionTableAmplitude[idx*9 + 8] = 0.02;
+    sharedMemory->motionTableFrequency[idx*9 + 6] = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 7] = 0.75;
+    sharedMemory->motionTableFrequency[idx*9 + 8] = 1.00;
 
 }
 

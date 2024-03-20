@@ -106,14 +106,14 @@ void Command::writeToCSVfile()
 {
 //    std::string name;
 //    name.append(DATASET_DIR);
-//    name.append("GRFDatasets_real_6_cos.csv");
+//    name.append("GRFDatasetsTransferLearning_real_v2_1_cubic_cos.csv");
 //    std::ofstream file(name.c_str());
 //    for (int i = 0; i < sharedMemory->dataIdx; i++)
 //    {
-//        for (int j = 0; j < 15; j++)
+//        for (int j = 0; j < 11; j++)
 //        {
-//            std::string str = std::to_string(sharedMemory->dataForSupervisedLearning[i][j]);
-//            if (j + 1 == 15)
+//            std::string str = std::to_string(sharedMemory->dataForTransferLearning[i][j]);
+//            if (j + 1 == 11)
 //            {
 //                file << str;
 //            }
@@ -125,26 +125,46 @@ void Command::writeToCSVfile()
 //        file << '\n';
 //    }
 
-    std::string name2;
-    name2.append(RESULT_DIR);
-    name2.append("Result_model1_sim2real.csv");
-//    name2.append("GRFDatasetsTransferLearning_real_6_cos.csv");
-    std::ofstream file2(name2.c_str());
+//    std::string name2;
+//    name2.append(RESULT_DIR);
+//    name2.append("Result_model1_sim2real.csv");
+//    std::ofstream file2(name2.c_str());
+//    for (int i = 0; i < sharedMemory->dataIdx; i++)
+//    {
+//        for (int j = 0; j < 3; j++)
+//        {
+//            std::string str = std::to_string(sharedMemory->dataForResults[i][j]);
+//            if (j + 1 == 3)
+//            {
+//                file2 << str;
+//            }
+//            else
+//            {
+//                file2 << str << ',';
+//            }
+//        }
+//        file2 << '\n';
+//    }
+
+    std::string name3;
+    name3.append(RESULT_DIR);
+    name3.append("Result_model8_sim2real_v2_2.csv");
+    std::ofstream file(name3.c_str());
     for (int i = 0; i < sharedMemory->dataIdx; i++)
     {
-        for (int j = 0; j < 3; j++)
+        for (int j = 0; j < 9; j++)
         {
-            std::string str = std::to_string(sharedMemory->dataForResults[i][j]);
-            if (j + 1 == 3)
+            std::string str = std::to_string(sharedMemory->dataLogger[i][j]);
+            if (j + 1 == 9)
             {
-                file2 << str;
+                file << str;
             }
             else
             {
-                file2 << str << ',';
+                file << str << ',';
             }
         }
-        file2 << '\n';
+        file << '\n';
     }
     std::cout << "Data is saved." << std::endl;
 }

@@ -5,8 +5,12 @@
 #include <iostream>
 #include "raisim/RaisimServer.hpp"
 #include <canine-leg_util/CosTrajectoryGenerator.hpp>
+#include <canine-leg_util/SharedMemory.hpp>
 
-std::string urdfPath = std::string(URDF_RSC_DIR) + "/canine_leg_left/canine_leg_left.urdf";
+pSHM sharedMemory;
+
+//std::string urdfPath = std::string(URDF_RSC_DIR) + "/canine_leg_left_v4/canine_leg_left_v4.urdf";
+std::string urdfPath = std::string(URDF_RSC_DIR) + "/canine_leg_left/canine_leg_left_V2.urdf";
 std::string name = "canine-leg";
 
 raisim::World world;
@@ -47,11 +51,14 @@ bool collectFlag = false;
 bool realTimeVisual = true;
 double mSetPoint = 0.23;
 
+double pastKneeTorque = 0;
+
 void resetJointState(double initialHeight)
 {
     mInitialJointPosition.setZero();
     mInitialJointVelocity.setZero();
     mInitialJointPosition << initialHeight, acos(initialHeight / 0.46), -2.0 * acos(initialHeight / 0.46);
+//    mInitialJointPosition << 1.0, 0.0, 0.0;
     robot->setGeneralizedCoordinate(mInitialJointPosition);
     robot->setGeneralizedVelocity(mInitialJointVelocity);
 }
@@ -174,7 +181,7 @@ void getGRF()
 
 void writeToCSVfile()
 {
-    std::string name2 = "../../datasets/training/GRFDatasets_to_compare_real_data.csv";
+    std::string name2 = "../../datasets/training/GRFDatasets_Leg_v2_1.csv";
     std::ofstream file2(name2.c_str());
     for (int i = 0; i < mDataIdx; i++)
     {
@@ -217,12 +224,12 @@ void collectData()
         std::cout << "[DATA COLLECTOR] Zero GRF is occurred." << std::endl;
         stopFlag = true;
     }
-    else if (mGRFtrue[2] > 100)
+    else if (mGRFtrue[2] > 80)
     {
-        std::cout << "[DATA COLLECTOR] Raisim error is occurred." << std::endl;
+        std::cout << "[DATA COLLECTOR] Raisim error 1 is occurred." << std::endl;
         stopFlag = true;
     }
-    else if(mPosition[0] < 0.03)
+    else if (mPosition[0] < 0.03)
     {
         std::cout << "[DATA COLLECTOR] Base contact is occurred." << std::endl;
         stopFlag = true;
@@ -232,25 +239,34 @@ void collectData()
         std::cout << "[DATA COLLECTOR] nan is occurred." << std::endl;
         stopFlag = true;
     }
-    else if(collectFlag == true)
+    else if (collectFlag == true)
     {
-        mStates(mDataIdx, 0) = mPositionBuffer(0, 0);
-        mStates(mDataIdx, 1) = mPositionBuffer(20, 0);
-        mStates(mDataIdx, 2) = mPositionBuffer(40, 0);
-        mStates(mDataIdx, 3) = mPositionBuffer(0, 1);
-        mStates(mDataIdx, 4) = mPositionBuffer(20, 1);
-        mStates(mDataIdx, 5) = mPositionBuffer(40, 1);
-        mStates(mDataIdx, 6) = mVelocityBuffer(0, 0);
-        mStates(mDataIdx, 7) = mVelocityBuffer(20, 0);
-        mStates(mDataIdx, 8) = mVelocityBuffer(40, 0);
-        mStates(mDataIdx, 9) = mVelocityBuffer(0, 1);
-        mStates(mDataIdx, 10) = mVelocityBuffer(20, 1);
-        mStates(mDataIdx, 11) = mVelocityBuffer(40, 1);
-        mStates(mDataIdx, 12) = mTorque[1];
-        mStates(mDataIdx, 13) = mTorque[2];
-        mStates(mDataIdx, 14) = mGRFtrue[2];
-        mDataIdx++;
+        if(abs(pastKneeTorque - mTorque[2])>1.0)
+        {
+            std::cout << "[DATA COLLECTOR] Raisim error 2 is occurred." << std::endl;
+            stopFlag = true;
+        }
+        else
+        {
+            mStates(mDataIdx, 0) = mPositionBuffer(0, 0);
+            mStates(mDataIdx, 1) = mPositionBuffer(20, 0);
+            mStates(mDataIdx, 2) = mPositionBuffer(40, 0);
+            mStates(mDataIdx, 3) = mPositionBuffer(0, 1);
+            mStates(mDataIdx, 4) = mPositionBuffer(20, 1);
+            mStates(mDataIdx, 5) = mPositionBuffer(40, 1);
+            mStates(mDataIdx, 6) = mVelocityBuffer(0, 0);
+            mStates(mDataIdx, 7) = mVelocityBuffer(20, 0);
+            mStates(mDataIdx, 8) = mVelocityBuffer(40, 0);
+            mStates(mDataIdx, 9) = mVelocityBuffer(0, 1);
+            mStates(mDataIdx, 10) = mVelocityBuffer(20, 1);
+            mStates(mDataIdx, 11) = mVelocityBuffer(40, 1);
+            mStates(mDataIdx, 12) = mTorque[1];
+            mStates(mDataIdx, 13) = mTorque[2];
+            mStates(mDataIdx, 14) = mGRFtrue[2];
+            mDataIdx++;
+        }
     }
+    pastKneeTorque = mTorque[2];
 }
 
 void doTest(double sineOffset, double sineAmplitude, double sineFrequency)
@@ -282,15 +298,15 @@ void doTest(double sineOffset, double sineAmplitude, double sineFrequency)
         world.integrate();
         iteration++;
         mLocalTime = iteration * world.getTimeStep();
-        if(iteration == period)
+        if (iteration == period)
         {
             collectFlag = true;
         }
 
-        if ((iteration == 2*period) || stopFlag)
+        if ((iteration == 2 * period) || stopFlag)
         {
             std::cout << "[SYSTEM] iteration : " << iteration << std::endl;
-            std::cout << "[SYSTEM] data index : " << mDataIdx << std::endl<< std::endl;
+            std::cout << "[SYSTEM] data index : " << mDataIdx << std::endl << std::endl;
             break;
         }
         if (realTimeVisual)
@@ -302,6 +318,7 @@ void doTest(double sineOffset, double sineAmplitude, double sineFrequency)
 
 int main()
 {
+    sharedMemory = (pSHM)malloc(sizeof(SHM));
     world.setTimeStep(dT);
     mStates.setZero();
     server.launchServer();
@@ -317,8 +334,12 @@ int main()
         {
             for (int k = 0; k < 40; k++)
             {
+//                sineOffset = 0.1 + 0.035 * i;
+//                sineAmplitude = 0.05 + 0.04 * j;
+//                sineFrequency = 0.1 + 0.05 * k;
+
                 sineOffset = 0.1 + 0.035 * i;
-                sineAmplitude = 0.05 + 0.04 * j;
+                sineAmplitude = 0.05 + 0.015 * j;
                 sineFrequency = 0.1 + 0.05 * k;
                 doTest(sineOffset, sineAmplitude, sineFrequency);
             }

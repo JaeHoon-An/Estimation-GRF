@@ -29,7 +29,8 @@ private:
     int mMotionTableIdx;
     double mBufferPosition [NET_INPUT_BUFFER_SIZE][MOTOR_NUM];
     double mBufferVelocity [NET_INPUT_BUFFER_SIZE][MOTOR_NUM];
-    Eigen::MatrixXd mGRFBuffer = Eigen::MatrixXd(10, 1);
+//    Eigen::MatrixXd mGRFBuffer = Eigen::MatrixXd(10, 1);
+    Eigen::MatrixXd mGRFBuffer = Eigen::MatrixXd(181, 1);
     double mReferenceTime;
 };
 

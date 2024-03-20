@@ -60,15 +60,16 @@ void SimulCommand::commandFunction()
         }
         case SIM_ONLINE_LEARNING:
         {
-            if(mbOnlineLearning)
-            {
-                sharedMemory->torchState = TORCH_ONLINE_LEARNING;
-            }
-            else
-            {
-                sharedMemory->torchState = TORCH_ESTIMATION;
-            }
-            mbOnlineLearning = !mbOnlineLearning;
+//            if(mbOnlineLearning)
+//            {
+//                sharedMemory->torchState = TORCH_ONLINE_LEARNING;
+//            }
+//            else
+//            {
+//                sharedMemory->torchState = TORCH_ESTIMATION;
+//            }
+//            mbOnlineLearning = !mbOnlineLearning;
+            sharedMemory->controlState = STATE_DATA_CUBIC_READY;
             break;
         }
         case SIM_SAVE_DATA:
@@ -84,25 +85,45 @@ void SimulCommand::commandFunction()
 
 void SimulCommand::writeToCSVfile()
 {
-    std::string name2;
-    name2.append(DATASET_DIR);
-    name2.append("GRFDatasetsSimTransfer.csv");
-    std::ofstream file2(name2.c_str());
+//    std::string name2;
+//    name2.append(DATASET_DIR);
+//    name2.append("GRFDatasetsSimTransfer.csv");
+//    std::ofstream file2(name2.c_str());
+//    for (int i = 0; i < sharedMemory->dataIdx; i++)
+//    {
+//        for (int j = 0; j < 11; j++)
+//        {
+//            std::string str = std::to_string(sharedMemory->dataForTransferLearning[i][j]);
+//            if (j + 1 == 11)
+//            {
+//                file2 << str;
+//            }
+//            else
+//            {
+//                file2 << str << ',';
+//            }
+//        }
+//        file2 << '\n';
+//    }
+    std::string name3;
+    name3.append(RESULT_DIR);
+    name3.append("Result_Sim_model8_cubic_trajectories.csv");
+    std::ofstream file(name3.c_str());
     for (int i = 0; i < sharedMemory->dataIdx; i++)
     {
-        for (int j = 0; j < 11; j++)
+        for (int j = 0; j < 9; j++)
         {
-            std::string str = std::to_string(sharedMemory->dataForTransferLearning[i][j]);
-            if (j + 1 == 11)
+            std::string str = std::to_string(sharedMemory->dataLogger[i][j]);
+            if (j + 1 == 9)
             {
-                file2 << str;
+                file << str;
             }
             else
             {
-                file2 << str << ',';
+                file << str << ',';
             }
         }
-        file2 << '\n';
+        file << '\n';
     }
     std::cout << "Data is saved." << std::endl;
 }

@@ -48,6 +48,7 @@ void CANMotor::CanFunction()
     {
     case CAN_NO_ACT:
     {
+        usleep(10);
         break;
     }
     case CAN_INIT:

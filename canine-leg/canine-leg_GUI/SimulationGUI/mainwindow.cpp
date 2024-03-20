@@ -353,16 +353,19 @@ void MainWindow::on_BT_MODEL_LOAD_clicked()
 void MainWindow::on_BT_MODEL_ONLINE_LEARNING_clicked()
 {
 //    sharedMemory->learningRate = ui->LE_MODEL_PARAMS_LEARNING_RATE->text().toDouble();
-//    sharedCommand->userCommand = SIM_ONLINE_LEARNING;
+    sharedCommand->userCommand = SIM_ONLINE_LEARNING;
 
-    sharedCommand->userCommand = SIM_SAVE_DATA;
+//    sharedCommand->userCommand = SIM_SAVE_DATA;
     sharedMemory->newCommand = true;
 }
 
 //TODO : Add write csv data in here
 void MainWindow::on_BT_EXPERIMENT_DATA_SAVE_clicked()
 {
-    std::string resultPath;
-    resultPath.append(SIMULRESULT_DIR);
-    resultPath.append(ui->LE_EXPERIMENT_DATA_PATH->text().toStdString());
+//    std::string resultPath;
+//    resultPath.append(SIMULRESULT_DIR);
+//    resultPath.append(ui->LE_EXPERIMENT_DATA_PATH->text().toStdString());
+
+    sharedCommand->userCommand = SIM_SAVE_DATA;
+    sharedMemory->newCommand = true;
 }

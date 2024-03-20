@@ -39,7 +39,6 @@ void JointPDController::DoCubicControl()
 void JointPDController::InitCosTrajectory()
 {
     mbFirstGenTraj = true;
-    mbCollectFlag = false;
     mIteration = 0;
     mPeriod = int(1 / sharedMemory->cosFrequency / CONTROL_dT);
     mCosTrajectoryGenerator.updateTrajectory(sharedMemory->desiredHipVerticalPosition, sharedMemory->localTime, sharedMemory->cosAmplitude, sharedMemory->cosFrequency);
@@ -56,27 +55,23 @@ void JointPDController::updateBuffer()
 
 void JointPDController::collectData()
 {
-    if (sharedMemory->measuredGRF == 0)
-    {
-        std::cout << "[DATA COLLECTOR] Zero GRF is occurred." << std::endl;
-        sharedMemory->dataCollectStopFlag = true;
-    }
-    else if (sharedMemory->measuredGRF > 100)
-    {
-        std::cout << "[DATA COLLECTOR] Raisim error is occurred." << std::endl;
-        sharedMemory->dataCollectStopFlag = true;
-    }
-    else if(sharedMemory->hipVerticalPosition < 0.03)
-    {
-        std::cout << "[DATA COLLECTOR] Base contact is occurred." << std::endl;
-        sharedMemory->dataCollectStopFlag = true;
-    }
-    else if (isnan(sharedMemory->motorPosition[0] + sharedMemory->motorPosition[1] + sharedMemory->motorVelocity[0] + sharedMemory->motorVelocity[1] + mTorque[1] + mTorque[2]))
-    {
-        std::cout << "[DATA COLLECTOR] nan is occurred." << std::endl;
-        sharedMemory->dataCollectStopFlag = true;
-    }
-    else if(mbCollectFlag == true)
+//    if (sharedMemory->measuredGRF == 0)
+//    {
+//        std::cout << "[DATA COLLECTOR] Zero GRF is occurred." << std::endl;
+//        sharedMemory->dataCollectStopFlag = true;
+//    }
+//    else if(sharedMemory->hipVerticalPosition < 0.03)
+//    {
+//        std::cout << "[DATA COLLECTOR] Base contact is occurred." << std::endl;
+//        sharedMemory->dataCollectStopFlag = true;
+//    }
+//    else if (isnan(sharedMemory->motorPosition[0] + sharedMemory->motorPosition[1] + sharedMemory->motorVelocity[0] + sharedMemory->motorVelocity[1] + mTorque[1] + mTorque[2]))
+//    {
+//        std::cout << "[DATA COLLECTOR] nan is occurred." << std::endl;
+//        sharedMemory->dataCollectStopFlag = true;
+//    }
+//    else
+    if(mbCollectFlag == true)
     {
 //        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][0] = mGRFBuffer(0, 0);
 //        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][1] = mGRFBuffer(1, 0);
@@ -89,15 +84,28 @@ void JointPDController::collectData()
 //        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][8] = mGRFBuffer(8, 0);
 //        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][9] = mGRFBuffer(9, 0);
 //        sharedMemory->dataForTransferLearning[sharedMemory->dataIdx][10] = sharedMemory->measuredGRF;
-//
+
 //        for(int i = 0 ; i < GRF_NET_INPUT_SIZE ; i++)
 //        {
 //            sharedMemory->dataForSupervisedLearning[sharedMemory->dataIdx][i] = sharedMemory->GRFNETInputs[i];
 //        }
 //        sharedMemory->dataForSupervisedLearning[sharedMemory->dataIdx][14] = sharedMemory->measuredGRF;
-        sharedMemory->dataForResults[sharedMemory->dataIdx][0] = sharedMemory->estimatedGRF;
-        sharedMemory->dataForResults[sharedMemory->dataIdx][1] = sharedMemory->sim2realGRF;
-        sharedMemory->dataForResults[sharedMemory->dataIdx][2] = sharedMemory->measuredGRF;
+
+//        sharedMemory->dataForResults[sharedMemory->dataIdx][0] = sharedMemory->estimatedGRF;
+//        sharedMemory->dataForResults[sharedMemory->dataIdx][1] = sharedMemory->sim2realGRF;
+//        sharedMemory->dataForResults[sharedMemory->dataIdx][2] = sharedMemory->measuredGRF;
+
+        sharedMemory->dataLogger[sharedMemory->dataIdx][0] = sharedMemory->motorPosition[0];
+        sharedMemory->dataLogger[sharedMemory->dataIdx][1] = sharedMemory->motorPosition[1];
+        sharedMemory->dataLogger[sharedMemory->dataIdx][2] = sharedMemory->motorVelocity[0];
+        sharedMemory->dataLogger[sharedMemory->dataIdx][3] = sharedMemory->motorVelocity[1];
+        sharedMemory->dataLogger[sharedMemory->dataIdx][4] = sharedMemory->motorDesiredTorque[0];
+        sharedMemory->dataLogger[sharedMemory->dataIdx][5] = sharedMemory->motorDesiredTorque[1];
+        sharedMemory->dataLogger[sharedMemory->dataIdx][6] = sharedMemory->estimatedGRF;
+        sharedMemory->dataLogger[sharedMemory->dataIdx][7] = sharedMemory->sim2realGRF;
+        sharedMemory->dataLogger[sharedMemory->dataIdx][8] = sharedMemory->measuredGRF;
+
+        std::cout<<"[CONTROLLER] Data logger idx : "<<sharedMemory->dataIdx<<std::endl;
         sharedMemory->dataIdx += 1;
     }
 }
@@ -115,11 +123,10 @@ void JointPDController::DoCosControl()
     {
         mbCollectFlag = true;
     }
-    if ((mIteration == 2*mPeriod) || sharedMemory->dataCollectStopFlag)
+    if (mIteration == 2*mPeriod)
     {
-        std::cout << "[SYSTEM] iteration : " << mIteration << std::endl;
-        std::cout << "[SYSTEM] data index : " << sharedMemory->dataIdx << std::endl<< std::endl;
         sharedMemory->dataCollectStopFlag = true;
+        mbCollectFlag = false;
     }
 }
 
@@ -136,7 +143,8 @@ void JointPDController::InitHomeTrajectory()
 void JointPDController::InitCubicTrajectory()
 {
     mbFirstGenTraj = true;
-    mCubicTrajectoryGenHipVertical.updateTrajectory(sharedMemory->desiredHipVerticalPosition, sharedMemory->cubicGoalHeight, sharedMemory->localTime, 2.0);
+    mbCollectFlag = true;
+    mCubicTrajectoryGenHipVertical.updateTrajectory(sharedMemory->desiredHipVerticalPosition, sharedMemory->cubicGoalHeight, sharedMemory->localTime, sharedMemory->cubicTimeDuration);
 }
 
 void JointPDController::solveIK()

@@ -40,8 +40,13 @@ constexpr int KNEE_IDX = 1;
 constexpr int MOTOR_HIP_ID = 0x145;
 constexpr int MOTOR_KNEE_ID = 0x141;
 
-constexpr double HIP_POS_OFFSET = 1.1882;
-constexpr double KNEE_POS_OFFSET = -3.260096;
+//V4
+//constexpr double HIP_POS_OFFSET = 1.1882;
+//constexpr double KNEE_POS_OFFSET = -3.260096;
+
+//V2
+constexpr double HIP_POS_OFFSET = 1.1708;
+constexpr double KNEE_POS_OFFSET = -2.7531;
 
 typedef struct _UI_COMMAND_
 {
@@ -67,6 +72,7 @@ typedef struct _SHM_
     double desiredHipVerticalVelocity;
     double hipVerticalPosition;
     double hipVerticalVelocity;
+    double rawGRF;
     double measuredGRF;
     double estimatedGRF;
     double sim2realGRF;
@@ -96,6 +102,7 @@ typedef struct _SHM_
     double dataForTransferLearning[2000000][11];
     double dataForSupervisedLearning[2000000][15];
     double dataForResults[2000000][3];
+    double dataLogger[2000000][9];
     std::string* modelName;
 } SHM, * pSHM;
 

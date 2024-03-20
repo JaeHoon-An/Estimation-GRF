@@ -191,6 +191,37 @@ void clearSharedMemory()
     sharedMemory->motionTableFrequency[idx*9 + 7] = 0.50;
     sharedMemory->motionTableFrequency[idx*9 + 8] = 0.75;
 
+    idx = 0;
+    sharedMemory->motionTableOffset[idx*9]     = 0.25;
+    sharedMemory->motionTableOffset[idx*9 + 1] = 0.25;
+    sharedMemory->motionTableOffset[idx*9 + 2] = 0.25;
+    sharedMemory->motionTableAmplitude[idx*9]     = 0.03;
+    sharedMemory->motionTableAmplitude[idx*9 + 1] = 0.025;
+    sharedMemory->motionTableAmplitude[idx*9 + 2] = 0.02;
+    sharedMemory->motionTableFrequency[idx*9]     = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 1] = 0.75;
+    sharedMemory->motionTableFrequency[idx*9 + 2] = 1.00;
+
+    sharedMemory->motionTableOffset[idx*9 + 3] = 0.30;
+    sharedMemory->motionTableOffset[idx*9 + 4] = 0.30;
+    sharedMemory->motionTableOffset[idx*9 + 5] = 0.30;
+    sharedMemory->motionTableAmplitude[idx*9 + 3] = 0.05;
+    sharedMemory->motionTableAmplitude[idx*9 + 4] = 0.04;
+    sharedMemory->motionTableAmplitude[idx*9 + 5] = 0.03;
+    sharedMemory->motionTableFrequency[idx*9 + 3] = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 4] = 0.75;
+    sharedMemory->motionTableFrequency[idx*9 + 5] = 1.00;
+
+    sharedMemory->motionTableOffset[idx*9 + 6] = 0.27;
+    sharedMemory->motionTableOffset[idx*9 + 7] = 0.27;
+    sharedMemory->motionTableOffset[idx*9 + 8] = 0.27;
+    sharedMemory->motionTableAmplitude[idx*9 + 6] = 0.04;
+    sharedMemory->motionTableAmplitude[idx*9 + 7] = 0.03;
+    sharedMemory->motionTableAmplitude[idx*9 + 8] = 0.02;
+    sharedMemory->motionTableFrequency[idx*9 + 6] = 0.50;
+    sharedMemory->motionTableFrequency[idx*9 + 7] = 0.75;
+    sharedMemory->motionTableFrequency[idx*9 + 8] = 1.00;
+
 }
 
 void StartSimulation()

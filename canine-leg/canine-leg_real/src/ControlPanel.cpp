@@ -93,8 +93,9 @@ void ControlPanel::ControllerFunction()
         PDcontrol.DoCosControl();
         if (sharedMemory->dataCollectStopFlag)
         {
+            std::cout << "[SYSTEM] data index : " << sharedMemory->dataIdx << std::endl<< std::endl;
             sharedMemory->controlState = STATE_DATA_CUBIC_READY;
-            if (mMotionTableIdx == 9)
+            if (mMotionTableIdx == 27)
             {
                 std::cout << "[SYSTEM] Collecting data is end. " << std::endl;
                 sharedMemory->controlState = STATE_HOME_READY;
@@ -136,7 +137,11 @@ void ControlPanel::updateBuffer()
     mBufferVelocity[0][0] = sharedMemory->motorVelocity[0];
     mBufferVelocity[0][1] = sharedMemory->motorVelocity[1];
 
-    for (int i = 9; i > 0; i--)
+//    for (int i = 9; i > 0; i--)
+//    {
+//        mGRFBuffer(i, 0) = mGRFBuffer(i - 1, 0);
+//    }
+    for (int i = 180; i > 0; i--)
     {
         mGRFBuffer(i, 0) = mGRFBuffer(i - 1, 0);
     }
@@ -160,14 +165,25 @@ void ControlPanel::updateNetInputs()
     sharedMemory->GRFNETInputs[12] = sharedMemory->motorDesiredTorque[0];
     sharedMemory->GRFNETInputs[13] = sharedMemory->motorDesiredTorque[1];
 
-    sharedMemory->Sim2RealNETInputs[0] = mGRFBuffer(0, 0);
-    sharedMemory->Sim2RealNETInputs[1] = mGRFBuffer(1, 0);
-    sharedMemory->Sim2RealNETInputs[2] = mGRFBuffer(2, 0);
-    sharedMemory->Sim2RealNETInputs[3] = mGRFBuffer(3, 0);
-    sharedMemory->Sim2RealNETInputs[4] = mGRFBuffer(4, 0);
-    sharedMemory->Sim2RealNETInputs[5] = mGRFBuffer(5, 0);
-    sharedMemory->Sim2RealNETInputs[6] = mGRFBuffer(6, 0);
-    sharedMemory->Sim2RealNETInputs[7] = mGRFBuffer(7, 0);
-    sharedMemory->Sim2RealNETInputs[8] = mGRFBuffer(8, 0);
-    sharedMemory->Sim2RealNETInputs[9] = mGRFBuffer(9, 0);
+//    sharedMemory->Sim2RealNETInputs[0] = mGRFBuffer(0, 0);
+//    sharedMemory->Sim2RealNETInputs[1] = mGRFBuffer(1, 0);
+//    sharedMemory->Sim2RealNETInputs[2] = mGRFBuffer(2, 0);
+//    sharedMemory->Sim2RealNETInputs[3] = mGRFBuffer(3, 0);
+//    sharedMemory->Sim2RealNETInputs[4] = mGRFBuffer(4, 0);
+//    sharedMemory->Sim2RealNETInputs[5] = mGRFBuffer(5, 0);
+//    sharedMemory->Sim2RealNETInputs[6] = mGRFBuffer(6, 0);
+//    sharedMemory->Sim2RealNETInputs[7] = mGRFBuffer(7, 0);
+//    sharedMemory->Sim2RealNETInputs[8] = mGRFBuffer(8, 0);
+//    sharedMemory->Sim2RealNETInputs[9] = mGRFBuffer(9, 0);
+
+    sharedMemory->Sim2RealNETInputs[9] = mGRFBuffer(0, 0);
+    sharedMemory->Sim2RealNETInputs[8] = mGRFBuffer(20, 0);
+    sharedMemory->Sim2RealNETInputs[7] = mGRFBuffer(40, 0);
+    sharedMemory->Sim2RealNETInputs[6] = mGRFBuffer(60, 0);
+    sharedMemory->Sim2RealNETInputs[5] = mGRFBuffer(80, 0);
+    sharedMemory->Sim2RealNETInputs[4] = mGRFBuffer(100, 0);
+    sharedMemory->Sim2RealNETInputs[3] = mGRFBuffer(120, 0);
+    sharedMemory->Sim2RealNETInputs[2] = mGRFBuffer(140, 0);
+    sharedMemory->Sim2RealNETInputs[1] = mGRFBuffer(160, 0);
+    sharedMemory->Sim2RealNETInputs[0] = mGRFBuffer(180, 0);
 }
